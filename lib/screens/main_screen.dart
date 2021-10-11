@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:meeting_app/animation/menu_delegate.dart';
 import 'package:meeting_app/model/event.dart';
 import 'package:meeting_app/model/event_model.dart';
 import 'package:meeting_app/screens/event_add_screen.dart';
@@ -12,127 +13,114 @@ class MainScreen extends StatefulWidget {
   _MainScreenState createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateMixin{
+
+  late AnimationController menuAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    menuAnimation = AnimationController(
+      duration: const Duration(milliseconds: 250),
+      vsync: this,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-
+    const double width =
+        274;
+    const double height =
+        70;
     return Scaffold(
         body: Container(
-          margin: EdgeInsets.only(left: 16, right: 16, top: 60),
-          child: Column(
-            // ignore: prefer_const_literals_to_create_immutables
-            children: [
-              Row(
-                children: const [
-                  Text(
-                    ' Предстоящие встречи',
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold
-                    ),
+              margin: EdgeInsets.only(left: 16, right: 16, top: 60),
+              child: Column(
+                // ignore: prefer_const_literals_to_create_immutables
+                children: [
+                  Row(
+                    children: const [
+                      Text(
+                        ' Предстоящие встречи',
+                        style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold
+                        ),
+                      ),
+                    ],
                   ),
+                  Expanded(
+                    child: Consumer<EventModel>(
+                        builder: (context, model, child){
+                          return ListView.builder(
+                              itemCount: model.getEvents().length,
+                              physics: BouncingScrollPhysics(),
+                              itemBuilder: (context, position){
+                                return getRow(model.getEvent(position));
+                              }
+                          );
+                        }
+                    ),
+                  )
                 ],
-              ),
-              Expanded(
-                child: Consumer<EventModel>(
-                    builder: (context, model, child){
-                      return ListView.builder(
-                          itemCount: model.getEvents().length,
-                          physics: BouncingScrollPhysics(),
-                          itemBuilder: (context, position){
-                            return getRow(model.getEvent(position));
-                          }
-                      );
-                    }
-                ),
               )
-            ],
-          )
-        ),
+            ),
         bottomNavigationBar: BottomAppBar(
           color: Color.fromRGBO(255, 23, 68, 1),
           child: Container(
+            height: 40,
             margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 25),
-            child: Row(
-              children:[
-                IconButton(
-                  onPressed: (){
-                    showDialog(
-                        context: context,
-                        builder: (context){
-                          return AlertDialog(
-                            title: Text('Введите данные'),
-                            content: SizedBox(
-                              height: 150,
-                              child: Column(
-                                children: [
-                                  Text('Костючук Константин'),
-                                  Divider(height: 40),
-                                  Text('Вакцинированы?'),
-                                  Switch(
-                                    value: true,
-                                    onChanged: (bool){},
-                                  )
-                                ],
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: (){},
-                                child: Text('Подтвердить'),
-                              )
-                            ],
-                          );
-                        }
-                    );
-                  },
-                  icon: const Icon(
-                      Icons.menu_outlined,
-                      color: Color.fromRGBO(198, 255, 0, 1),
-                      size: 32,
-                  ),
-                ),
-              ]
-            ),
+            child: null
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
-        floatingActionButton: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(35),
-            boxShadow: const [
-              BoxShadow(
-                spreadRadius: 0.005,
-                color: Colors.black,
-                offset: Offset(0, 4),
-                blurRadius: 5,
-              )
+        floatingActionButton: Container(
+          height: height,
+          width: width,
+          child: Flow(
+            delegate: FlowMenuDelegate(menuAnimation: menuAnimation),
+            children: [
+              getFloatingButton(),
+              getFloatingButton(),
+              getFloatingButton(),
             ],
-          ),
-          child: SizedBox(
-            width: 70.0,
-            height: 70.0,
-            child: RawMaterialButton(
-              shape: const CircleBorder(),
-              elevation: 0.0,
-              fillColor: Color.fromRGBO(198, 255, 0, 1),
-              child: const Icon(
-                Icons.add,
-                color: Colors.black,
-              ),
-              onPressed: onFloatingButtonPressed,
-            ),
           ),
         )
       );
   }
 
-  void onFloatingButtonPressed(){
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => EventAddScreen()
-    ));
-  }
+  Widget getFloatingButton() => DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(35),
+        boxShadow: const [
+          // BoxShadow(
+          //   spreadRadius: 0.005,
+          //   color: Colors.black,
+          //   offset: Offset(0, 4),
+          //   blurRadius: 5,
+          // )
+        ],
+      ),
+      child: SizedBox(
+        width: 70.0,
+        height: 70.0,
+        child: RawMaterialButton(
+          shape: const CircleBorder(),
+          elevation: 0.0,
+          fillColor: Color.fromRGBO(198, 255, 0, 1),
+          child: const Icon(
+            Icons.menu,
+            color: Colors.black,
+          ),
+          onPressed: (){
+            menuAnimation.status == AnimationStatus.completed
+                ? menuAnimation.reverse()
+                : menuAnimation.forward();
+          },
+        ),
+      ),
+    );
+
 
   Widget getRow(Event event) {
 
@@ -244,6 +232,12 @@ class _MainScreenState extends State<MainScreen> {
         )
       ),
     );
+  }
+
+  void onFloatingButtonPressed(){
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => EventAddScreen()
+        ));
   }
 
 }
