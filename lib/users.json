@@ -1,0 +1,37 @@
+[
+  {
+    "image": "1",
+    "name": "Maxim Butyrin",
+    "status": 2
+  },
+  {
+    "image": "2",
+    "name": "Misha Kuznetsov",
+    "status": 1
+  },
+  {
+    "image": "3",
+    "name": "Konstantin Fayuk",
+    "status": 0
+  },
+  {
+    "image": "4",
+    "name": "Julius Mayevskiy",
+    "status": 1
+  },
+  {
+    "image": "5",
+    "name": "Alex Kostyuchuk",
+    "status": 1
+  },
+  {
+    "image": "6",
+    "name": "Vladimir Derevencha",
+    "status": 0
+  },
+  {
+    "image": "7",
+    "name": "Pavel Teslenko",
+    "status": 0
+  }
+]
