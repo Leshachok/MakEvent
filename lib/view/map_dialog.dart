@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:meeting_app/model/add_event_model.dart';
-
+import 'package:meeting_app/viewmodel/create_event_view_model.dart';
+import 'package:google_geocoding/google_geocoding.dart';
 
 class GoogleMapDialog extends StatefulWidget {
 
-  late AddEventModel model;
 
+  late CreateEventViewModel model;
   GoogleMapDialog(this.model, {Key? key}) : super(key: key);
 
   @override
@@ -15,14 +15,13 @@ class GoogleMapDialog extends StatefulWidget {
 
 class _GoogleMapDialogState extends State<GoogleMapDialog> {
 
-  late AddEventModel model;
+  late CreateEventViewModel model;
   Set<Marker> markers = Set();
 
   _GoogleMapDialogState(this.model);
 
   @override
   Widget build(BuildContext context) {
-
     return GoogleMap(
       initialCameraPosition: const CameraPosition(
           target: LatLng(48.835, 31.463),
@@ -34,6 +33,7 @@ class _GoogleMapDialogState extends State<GoogleMapDialog> {
   }
 
   void onMapTapped(LatLng latLng){
+    geoCode(latLng);
     setState(() {
       markers.add(
           Marker(
@@ -41,12 +41,15 @@ class _GoogleMapDialogState extends State<GoogleMapDialog> {
             position: latLng
           )
       );
-      model.setLocation(latLng.latitude.toStringAsPrecision(8) + ',' + latLng.longitude.toStringAsPrecision(8));
     });
   }
 
-
-
-
+  geoCode(LatLng latLng) async{
+    var googleGeocoding = GoogleGeocoding("AIzaSyD4HeEGDDGBismjzrzZgn0dDYcNFGW2d6Q");
+    var result = await googleGeocoding.geocoding.getReverse(LatLon(latLng.latitude, latLng.longitude), language: 'uk');
+    var place = result!.results!.first.formattedAddress;
+    print(place);
+    model.setLocation(place!);
+  }
 
 }

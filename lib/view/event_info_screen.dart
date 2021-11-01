@@ -42,6 +42,8 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var loc = _event.location;
+    if(loc.length > 36) loc = loc.substring(0, 35) + '..';
     return Scaffold(
         body: Column(
           children:[
@@ -139,7 +141,7 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
                   Container(
                       padding: const EdgeInsets.only(left: 10),
                       child:  Text(
-                        _event.location,
+                        loc,
                         style: const TextStyle(
                             fontSize: 18
                         ),
@@ -149,8 +151,9 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
               ),
             ),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              child: Divider(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+
+              child: const Divider(
                 height: 10,
                 thickness: 0.8,
               ),

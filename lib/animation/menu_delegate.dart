@@ -7,8 +7,8 @@ class FlowMenuDelegate extends FlowDelegate{
   FlowMenuDelegate({required this.menuAnimation})
       : super(repaint: menuAnimation);
 
-  List<int> horizontal = [0, -1, 1];
-  List<double> sizes = [0, 86, 86];
+  List<int> horizontal = [-1, 1, 0];
+  List<double> sizes = [86, 86, 0];
   
   @override
   void paintChildren(FlowPaintingContext context) {
