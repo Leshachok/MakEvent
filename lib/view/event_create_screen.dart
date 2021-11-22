@@ -10,11 +10,19 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class EventCreateScreen extends StatefulWidget {
+  MainViewModel viewModel;
+  EventCreateScreen(this.viewModel);
+
   @override
-  _EventCreateScreenState createState() => _EventCreateScreenState();
+  _EventCreateScreenState createState() => _EventCreateScreenState(viewModel);
+
 }
 
 class _EventCreateScreenState extends State<EventCreateScreen> {
+
+  MainViewModel viewModel;
+
+  _EventCreateScreenState(this.viewModel);
 
   late String title;
   late String description;
@@ -327,8 +335,8 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
 
   void onCreateButtonPressed(){
     Event newEvent = Event(title, description, date + ' ' + time, location);
-    var model = context.read<MainViewModel>();
-    model.addEvent(newEvent);
+    // var model = context.read<MainViewModel>();
+    viewModel.addEvent(newEvent);
     Navigator.pop(context);
   }
 

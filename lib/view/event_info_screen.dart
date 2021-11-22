@@ -43,7 +43,7 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
   @override
   Widget build(BuildContext context) {
     var loc = _event.location;
-    if(loc.length > 36) loc = loc.substring(0, 35) + '..';
+    if(loc.length > 30) loc = loc.substring(0, 29) + '..';
     return Scaffold(
         body: Column(
           children:[
@@ -222,33 +222,45 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
   }
 
   Widget getRow(int position) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children:[
-            Container(
-              child: Row(
-                // ignore: prefer_const_literals_to_create_immutables
-                children: [
-                  const Icon(
-                    Icons.camera_alt,
-                    size: 25,
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(left: 10),
-                    child: Text(
-                      users[position].name,
-                      style: TextStyle(
-                          fontSize: 18
-                      ),
+    return GestureDetector(
+      onLongPress: (){
+        users.removeAt(position);
+        setState(() {});
+      },
+      onTap: (){
+        users[position].status = users[position].status == 0 ? 1 : users[position].status == 1 ? 2 : 0;
+        setState(() {
+
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children:[
+              Container(
+                child: Row(
+                  // ignore: prefer_const_literals_to_create_immutables
+                  children: [
+                    const Icon(
+                      Icons.camera_alt,
+                      size: 25,
                     ),
-                  )
-                ],
+                    Container(
+                      padding: EdgeInsets.only(left: 10),
+                      child: Text(
+                        users[position].name,
+                        style: const TextStyle(
+                            fontSize: 18
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-            getStatus(position)
-          ]
+              getStatus(position)
+            ]
+        ),
       ),
     );
   }
@@ -262,12 +274,16 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
             content: null,
             actions: [
               TextButton(
-                onPressed: (){},
-                child: Text('нет'),
+                onPressed: (){
+                  Navigator.pop(context);
+                },
+                child: Text('Нет'),
               ),
               TextButton(
-                onPressed: (){},
-                child: Text('да'),
+                onPressed: (){
+                  Navigator.pop(context);
+                },
+                child: Text('Да'),
               )
             ],
           );

@@ -161,10 +161,11 @@ class _EventListScreenState extends State<EventListScreen> {
   }
 
   void onFloatingButtonPressed(){
+    MainViewModel viewModel = context.read<MainViewModel>();
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => ChangeNotifierProvider(
             create: (BuildContext context) => CreateEventViewModel(),
-            child: EventCreateScreen()
+            child: EventCreateScreen(viewModel)
         )
         ));
   }

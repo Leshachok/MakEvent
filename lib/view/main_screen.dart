@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:meeting_app/view//account_screen.dart';
 import 'package:meeting_app/view/event_list_screen.dart';
 import 'package:meeting_app/view/request_screen.dart';
-import 'package:meeting_app/viewmodel/create_event_view_model.dart';
 import 'package:meeting_app/viewmodel/main_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -23,10 +22,6 @@ var currentIndex = 0;
     InvitationsScreen()
   ];
 
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
