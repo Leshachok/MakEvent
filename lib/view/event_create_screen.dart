@@ -3,32 +3,32 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:meeting_app/viewmodel/create_event_view_model.dart';
 import 'package:meeting_app/model/event.dart';
-import 'package:meeting_app/viewmodel/main_view_model.dart';
 import 'package:meeting_app/view/map_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class EventCreateScreen extends StatefulWidget {
-  MainViewModel viewModel;
-  EventCreateScreen(this.viewModel);
+  EventCreateScreen();
 
   @override
-  _EventCreateScreenState createState() => _EventCreateScreenState(viewModel);
+  _EventCreateScreenState createState() => _EventCreateScreenState();
 
 }
 
 class _EventCreateScreenState extends State<EventCreateScreen> {
 
-  MainViewModel viewModel;
+  late CreateEventViewModel viewModel;
 
-  _EventCreateScreenState(this.viewModel);
+  _EventCreateScreenState();
 
-  late String title;
-  late String description;
-  late String date;
+  //потом нахуй все в вьюмодел
+  String title = "";
+  String description = "";
+  String date = "";
   String time = "";
-  late String location;
+  String location = "";
 
 
   @override
@@ -38,6 +38,7 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
     DateFormat formatter = DateFormat('yyyy-MM-dd');
     String formatted = formatter.format(now);
     date = formatted;
+    viewModel = context.read<CreateEventViewModel>();
   }
 
   @override
@@ -320,7 +321,8 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
         initialTime: const TimeOfDay(hour: 0, minute: 0)
     ).then((value) => {
       setState(() {
-        final String hourLabel = _addLeadingZeroIfNeeded(value!.hour);
+        if(value == null) return;
+        final String hourLabel = _addLeadingZeroIfNeeded(value.hour);
         final String minuteLabel = _addLeadingZeroIfNeeded(value.minute);
         time = '$hourLabel:$minuteLabel';
       })
@@ -334,15 +336,23 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
   void onBackButtonPressed() => Navigator.pop(context);
 
   void onCreateButtonPressed(){
-    Event newEvent = Event(title, description, date + ' ' + time, location);
-    // var model = context.read<MainViewModel>();
-    viewModel.addEvent(newEvent);
-    Navigator.pop(context);
+    CreateEventViewModel model = context.read<CreateEventViewModel>();
+    if(!(title.isNotEmpty && description.isNotEmpty && date.isNotEmpty && location.isNotEmpty && model.latitude != 0.0)) {
+      Fluttertoast.showToast(
+          msg: "Заповніть всі поля!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+      );
+    }else{
+      Event newEvent = Event(title, description, date + ' ' + time, location, model.latitude, model.longitude);
+      // var model = context.read<MainViewModel>();
+      model.createEvent(newEvent);
+      Navigator.pop(context);
+    }
   }
 
 
   void onPlaceChoosingClicked() {
-    CreateEventViewModel model = context.read<CreateEventViewModel>();
     showDialog(
         context: context,
         builder: (context){
@@ -351,7 +361,7 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
                 contentPadding: EdgeInsets.only(top: 16, left: 24, right: 24),
                 content: SizedBox(
                     height: 360,
-                    child: GoogleMapDialog(model)
+                    child: GoogleMapDialog(viewModel)
                 ),
                 actionsPadding: EdgeInsets.symmetric(vertical: 0),
                 actions: [
@@ -383,7 +393,6 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
     var adress = map['results']![0];
     // var bytes = adress.codeUnits;
     // adress = utf8.decode(bytes);
-    print(adress);
   }
 
 }

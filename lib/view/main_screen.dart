@@ -27,7 +27,7 @@ var currentIndex = 0;
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create:  (BuildContext context) => MainViewModel()),
+        ChangeNotifierProvider(create:  (BuildContext context) => MainViewModel(context)),
       ],
       child: Scaffold(
         body: fragments[currentIndex],

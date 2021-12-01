@@ -27,6 +27,13 @@
               android:name="io.flutter.embedding.android.SplashScreenDrawable"
               android:resource="@drawable/launch_background"
               />
+            <meta-data  android:name="flutter_deeplinking_enabled" android:value="true" />
+            <intent-filter android:label="Создать встречу">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="meetingapp.com" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -40,6 +47,7 @@
         <meta-data android:name = "com.google.android.geo.API_KEY"
             android:value="AIzaSyD4HeEGDDGBismjzrzZgn0dDYcNFGW2d6Q">
         </meta-data>
+
 
     </application>
 </manifest>

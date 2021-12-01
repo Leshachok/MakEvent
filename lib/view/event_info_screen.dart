@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:meeting_app/model/event.dart';
 import 'package:meeting_app/model/user.dart';
+import 'package:url_launcher/link.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EventInfoScreen extends StatefulWidget {
 
@@ -43,13 +45,16 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
   @override
   Widget build(BuildContext context) {
     var loc = _event.location;
-    if(loc.length > 30) loc = loc.substring(0, 29) + '..';
+    if(loc.length > 28) loc = loc.substring(0, 27) + '..';
     return Scaffold(
         body: Column(
           children:[
             Stack(
                 children:[
-                  Image.asset('lib/images/ski.jpg'),
+                  Hero(
+                    tag: "event_${_event.getId()}_image",
+                    child: Image.asset('lib/images/ski.jpg')
+                  ),
                   Positioned(
                     top: 50,
                     left: 16,
@@ -130,23 +135,40 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
             ),
 
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              margin: EdgeInsets.only(left: 20, top: 10, bottom: 10, right: 10),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(
-                    Icons.place,
-                    size: 20,
-                  ),
                   Container(
-                      padding: const EdgeInsets.only(left: 10),
-                      child:  Text(
-                        loc,
-                        style: const TextStyle(
-                            fontSize: 18
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.place,
+                          color: Color.fromRGBO(255, 23, 68, 1),
+                          size: 20,
                         ),
+                        Container(
+                            padding: const EdgeInsets.only(left: 10),
+                            child:  Text(
+                              loc,
+                              style: const TextStyle(
+                                  fontSize: 18
+                              ),
+                            )
+                        )
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                      onPressed: onCreateRoute,
+                      icon: const Icon(
+                        Icons.subdirectory_arrow_right,
+                        color: Color.fromRGBO(255, 23, 68, 1),
+                        size: 32,
                       )
                   )
+
                 ],
               ),
             ),
@@ -289,6 +311,15 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
           );
         })
   };
+
+  void onCreateRoute() async{
+    var url = 'https://www.google.com/maps?f=d&daddr=${_event.latitude.toString()},${_event.longitude.toString()}&dirflg=d';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   void onBackButtonPressed() => Navigator.pop(context);
 

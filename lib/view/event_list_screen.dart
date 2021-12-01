@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:meeting_app/viewmodel/create_event_view_model.dart';
 import 'package:meeting_app/viewmodel/main_view_model.dart';
 import 'package:provider/provider.dart';
@@ -37,13 +38,16 @@ class _EventListScreenState extends State<EventListScreen> {
                 Expanded(
                   child: Consumer<MainViewModel>(
                       builder: (context, model, child){
-                        return ListView.builder(
-                            itemCount: model.getEvents().length,
-                            physics: BouncingScrollPhysics(),
-                            itemBuilder: (context, position){
-                              var event = model.getEvent(position);
-                              return getRow(event);
-                            }
+                        return RefreshIndicator(
+                          onRefresh: onRefreshList,
+                          color: Color.fromRGBO(255, 23, 68, 1),
+                          child: ListView.builder(
+                              itemCount: model.getEvents().length,
+                              itemBuilder: (context, position){
+                                var event = model.getEvent(position);
+                                return getRow(event);
+                              }
+                          ),
                         );
                       }
                   ),
@@ -87,7 +91,9 @@ class _EventListScreenState extends State<EventListScreen> {
 
   Widget getRow(Event event) {
     var location = event.location;
-    if(location.length > 36) location = location.substring(0, 35) + '..';
+    if(location.length > 34) location = location.substring(0, 33) + '..';
+    timeDilation = 2.0;
+
     return GestureDetector(
       onTap: (){
         Navigator.push(context,
@@ -100,8 +106,11 @@ class _EventListScreenState extends State<EventListScreen> {
             child: Column(
               children: [
                 ClipRRect(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
-                    child: Image.asset('lib/images/ski.jpg')
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
+                  child: Hero(
+                    tag: "event_${event.getId()}_image",
+                    child: Image.asset('lib/images/ski.jpg'),
+                  ),
                 ),
                 Container(
                   margin: EdgeInsets.all(16),
@@ -161,13 +170,17 @@ class _EventListScreenState extends State<EventListScreen> {
   }
 
   void onFloatingButtonPressed(){
-    MainViewModel viewModel = context.read<MainViewModel>();
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => ChangeNotifierProvider(
             create: (BuildContext context) => CreateEventViewModel(),
-            child: EventCreateScreen(viewModel)
+            child: EventCreateScreen()
         )
         ));
+  }
+
+  Future<void> onRefreshList() async{
+    MainViewModel viewModel = context.read<MainViewModel>();
+    await viewModel.downloadEvents();
   }
 
 }

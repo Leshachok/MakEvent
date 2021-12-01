@@ -3,6 +3,8 @@ class User{
   late String image;
   late String name;
   late int status;
+  late String vaccination;
+  late String _id;
 
   User(this.image, this.name, this.status);
 

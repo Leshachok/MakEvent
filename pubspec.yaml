@@ -52,6 +52,9 @@ dev_dependencies:
   http: ^0.13.3
   intl: ^0.17.0
   google_geocoding: ^0.2.0
+  url_launcher: ^6.0.0
+  fluttertoast: ^8.0.8
+  shared_preferences: ^2.0.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -65,7 +68,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - lib/images/ski.jpg
+    - lib/images/
     - lib/users.json
 
   # To add assets to your application, add an assets section, like this:
