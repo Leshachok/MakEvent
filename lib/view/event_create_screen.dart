@@ -1,11 +1,9 @@
-
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:meeting_app/view/send_request_dialog.dart';
 import 'package:meeting_app/viewmodel/create_event_view_model.dart';
-import 'package:meeting_app/model/event.dart';
+import 'package:meeting_app/data/event.dart';
 import 'package:meeting_app/view/map_dialog.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -259,14 +257,17 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
                           onPressed: (){},
                         ),
                       ),
-                      Container(
-                        padding: EdgeInsets.only(left: 10),
-                        child: GestureDetector(
-                          child: const Text(
-                            'ПРИГЛАСИТЬ ДРУЗЕЙ',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color.fromRGBO(255, 32, 75, 25),
+                      GestureDetector(
+                        onTap: onAddFriendClicked,
+                        child: Container(
+                          padding: EdgeInsets.only(left: 10),
+                          child: GestureDetector(
+                            child: const Text(
+                              'ПРИГЛАСИТЬ ДРУЗЕЙ',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color.fromRGBO(255, 32, 75, 25),
+                              ),
                             ),
                           ),
                         ),
@@ -366,7 +367,7 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
                 actionsPadding: EdgeInsets.symmetric(vertical: 0),
                 actions: [
                   TextButton(
-                      onPressed: onLocationChosen,
+                      onPressed: closeDialog,
                       child: Text('Подтвердить'))
                 ],
 
@@ -378,21 +379,33 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
     });
   }
 
-  void onLocationChosen(){
+  void closeDialog(){
     Navigator.pop(context, true);
   }
 
-  Future<void> getAdressByCoords(String location) async {
-    //TODO
-    String token = "AIzaSyD4HeEGDDGBismjzrzZgn0dDYcNFGW2d6Q";
-    String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=$location&key=$token";
-    print(url);
-    var response = await http.get(Uri.parse(url));
-    var json = response.body;
-    Map<String, dynamic> map = jsonDecode(json);
-    var adress = map['results']![0];
-    // var bytes = adress.codeUnits;
-    // adress = utf8.decode(bytes);
+  void onAddFriendClicked() {
+    showDialog(
+      context: context,
+      builder: (context){
+        return AlertDialog(
+          title: const Text('Додати друзів'),
+          contentPadding: EdgeInsets.only(top: 16, left: 24, right: 24),
+          content: SizedBox(
+              height: 360,
+              child: SendRequestDialog(viewModel)
+          ),
+          actionsPadding: EdgeInsets.symmetric(vertical: 0),
+          actions: [
+            TextButton(
+                onPressed: closeDialog,
+                child: Text('Підтвердити'))
+          ],
+
+        );
+
+      },
+    ).then((value){
+    });
   }
 
 }

@@ -6,17 +6,16 @@ import 'package:flutter/painting.dart';
 import 'package:meeting_app/viewmodel/auth_view_model.dart';
 import 'package:provider/src/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  LoginScreenState createState() => LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class LoginScreenState extends State<LoginScreen> {
 
   late AuthViewModel viewModel;
   String email = "";
@@ -83,7 +82,14 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             GestureDetector(
-              onTap: onLogin,
+              onTap: () async {
+                var message = await onLogin(email, password);
+                Fluttertoast.showToast(
+                  msg: message,
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                );
+              },
               child: Container(
                 margin: const EdgeInsets.only(top: 32),
                 height: 46,
@@ -104,7 +110,14 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             GestureDetector(
-              onTap: onRegister,
+              onTap: () async {
+                var message = await onRegister(email, password);
+                Fluttertoast.showToast(
+                  msg: message,
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                );
+              },
               child: Container(
                   margin: const EdgeInsets.only(top: 16),
                   height: 46,
@@ -132,47 +145,38 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void onRegister(){
-    var response = viewModel.register(email, password);
+  Future<String> onRegister(String email, String password) async{
+    bool emailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(email);
+    if(!emailValid) return "Введена пошта недійсна!";
+    if(password.length < 8) return "Пароль має бути більше 7 символів!";
+
+    var response = await viewModel.register(email, password);
     dynamic json;
     String message = "";
 
-    response.then((value) => {
-      json = jsonDecode(value),
-      message = json['message'] != null ? json['message'] : "Акаунт створено",
-      Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-      )
-    });
-
+    json = jsonDecode(response);
+    message = json['message'] != null ? json['message'] : "Акаунт створено";
+    return message;
     // Navigator.pushReplacement(
     //   context, MaterialPageRoute(builder: (context) => MainScreen())
     // );
   }
 
-  void onLogin(){
-    var response = viewModel.login(email, password);
-    dynamic json;
+  Future<String> onLogin(String email, String password) async{
+    bool emailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(email);
+    if(!emailValid) return "Введена пошта недійсна!";
+    if(password.length < 8) return "Пароль має бути більше 7 символів!";
 
-    response.then((value) => {
-      json = jsonDecode(value),
-      if(json['message'] != null){
-        Fluttertoast.showToast(
-          msg: json['message'],
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-        )
-      } else authorize(json)
-    });
-
-
+    var response = await viewModel.login(email, password);
+    dynamic json = jsonDecode(response);
+    if(json['message'] != null){
+      return json['message'];
+    } else authorize(json);
+    return "Авторизовано!";
   }
 
-  void authorize(dynamic json) async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    viewModel.authorize(prefs, json);
+  void authorize(dynamic json){
+    viewModel.authorize(json);
     Navigator.pushReplacement(
       context, MaterialPageRoute(builder: (context) => MainScreen())
     );

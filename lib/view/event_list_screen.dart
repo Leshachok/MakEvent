@@ -4,7 +4,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:meeting_app/viewmodel/create_event_view_model.dart';
 import 'package:meeting_app/viewmodel/main_view_model.dart';
 import 'package:provider/provider.dart';
-import 'package:meeting_app/model/event.dart';
+import 'package:meeting_app/data/event.dart';
 import 'event_create_screen.dart';
 import 'event_info_screen.dart';
 
@@ -96,8 +96,9 @@ class _EventListScreenState extends State<EventListScreen> {
 
     return GestureDetector(
       onTap: (){
+        var viewModel = context.read<MainViewModel>();
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => EventInfoScreen(event)
+            MaterialPageRoute(builder: (context) => EventInfoScreen(event, viewModel)
             ));
       },
       child: Padding(
@@ -108,7 +109,7 @@ class _EventListScreenState extends State<EventListScreen> {
                 ClipRRect(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
                   child: Hero(
-                    tag: "event_${event.getId()}_image",
+                    tag: "${event.getId()}",
                     child: Image.asset('lib/images/ski.jpg'),
                   ),
                 ),

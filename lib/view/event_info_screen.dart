@@ -1,42 +1,37 @@
-
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:meeting_app/model/event.dart';
-import 'package:meeting_app/model/user.dart';
-import 'package:url_launcher/link.dart';
+import 'package:meeting_app/data/event.dart';
+import 'package:meeting_app/data/participant.dart';
+import 'package:meeting_app/viewmodel/main_view_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class EventInfoScreen extends StatefulWidget {
 
   late Event _event;
+  late MainViewModel viewModel;
 
-  EventInfoScreen(this._event);
+  EventInfoScreen(this._event, this.viewModel);
 
   @override
-  _EventInfoScreenState createState() => _EventInfoScreenState(_event);
+  _EventInfoScreenState createState() => _EventInfoScreenState(_event, viewModel);
 }
 
 class _EventInfoScreenState extends State<EventInfoScreen> {
 
-  List<User> users = [];
+  List<Participant> participants = [];
   late Event _event;
+  late MainViewModel viewModel;
 
-  _EventInfoScreenState(this._event);
+  _EventInfoScreenState(this._event, this.viewModel);
 
   @override
   void initState() {
     super.initState();
-    getJsonFromFile();
+    getParticipants();
+    // getJsonFromFile();
   }
 
-  void getJsonFromFile() async{
-    String json = await rootBundle.loadString('lib/users.json');
-    var list = (jsonDecode(json) as List<dynamic>);
-    list.forEach((element) {
-      users.add(User.fromJson(element));
-    });
+  void getParticipants() async{
+    participants = await viewModel.getParticipants(_event.getId());
     setState(() {
 
     });
@@ -52,7 +47,7 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
             Stack(
                 children:[
                   Hero(
-                    tag: "event_${_event.getId()}_image",
+                    tag: _event.getId(),
                     child: Image.asset('lib/images/ski.jpg')
                   ),
                   Positioned(
@@ -208,7 +203,7 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
                   context: context,
                   removeTop: true,
                   child: ListView.builder(
-                    itemCount: users.length,
+                    itemCount: participants.length,
                     itemBuilder: (BuildContext context, int position){
                       return getRow(position);
                       },
@@ -244,45 +239,33 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
   }
 
   Widget getRow(int position) {
-    return GestureDetector(
-      onLongPress: (){
-        users.removeAt(position);
-        setState(() {});
-      },
-      onTap: (){
-        users[position].status = users[position].status == 0 ? 1 : users[position].status == 1 ? 2 : 0;
-        setState(() {
-
-        });
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 12),
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children:[
-              Container(
-                child: Row(
-                  // ignore: prefer_const_literals_to_create_immutables
-                  children: [
-                    const Icon(
-                      Icons.camera_alt,
-                      size: 25,
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 10),
-                      child: Text(
-                        users[position].name,
-                        style: const TextStyle(
-                            fontSize: 18
-                        ),
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children:[
+            Container(
+              child: Row(
+                // ignore: prefer_const_literals_to_create_immutables
+                children: [
+                  const Icon(
+                    Icons.camera_alt,
+                    size: 25,
+                  ),
+                  Container(
+                    padding: EdgeInsets.only(left: 10),
+                    child: Text(
+                      participants[position].user.name,
+                      style: const TextStyle(
+                          fontSize: 18
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ),
-              getStatus(position)
-            ]
-        ),
+            ),
+            getStatus(position)
+          ]
       ),
     );
   }
@@ -324,9 +307,9 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
   void onBackButtonPressed() => Navigator.pop(context);
 
   Widget getStatus(int pos){
-    Color textColor = users[pos].status == 0 ? Color.fromRGBO(255, 23, 68, 1) : users[pos].status == 1 ? Colors.green : Colors.blue;
+    Color textColor = participants[pos].status == 0 ? Colors.grey :  participants[pos].status == 1 ? Color.fromRGBO(255, 23, 68, 1) : participants[pos].status == 2 ? Colors.green : Colors.blue;
     Color backColor = textColor.withAlpha(50);
-    String text = users[pos].status == 0 ? "Слился" : users[pos].status == 1 ? "Будет" : "Зачинщик";
+    String text = participants[pos].status == 0 ? "Не вирішив" : participants[pos].status == 1 ? "Відмовився" : participants[pos].status == 2 ? "Погодився" : "Організатор";
 
     return Container(
       decoration: BoxDecoration(

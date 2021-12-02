@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:meeting_app/model/event.dart';
+import 'package:meeting_app/data/event.dart';
 import 'package:meeting_app/viewmodel/main_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -36,13 +36,15 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
                 Expanded(
                   child: Consumer<MainViewModel>(
                       builder: (context, model, child){
-                        return ListView.builder(
-                            itemCount: model.getRequests().length,
-                            physics: BouncingScrollPhysics(),
-                            itemBuilder: (context, position){
-                              var event = model.getRequest(position);
-                              return getRow(event);
-                            }
+                        return RefreshIndicator(
+                          onRefresh: onRefreshList,
+                          child: ListView.builder(
+                              itemCount: model.getRequests().length,
+                              itemBuilder: (context, position){
+                                var event = model.getRequest(position);
+                                return getRow(event);
+                              }
+                          ),
                         );
                       }
                   ),
@@ -58,8 +60,9 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
     if(location.length > 36) location = location.substring(0, 35) + '..';
     return GestureDetector(
       onTap: (){
+        var viewModel = context.read<MainViewModel>();
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => EventInfoScreen(event)
+            MaterialPageRoute(builder: (context) => EventInfoScreen(event, viewModel)
             ));
       },
       child: Card(
@@ -67,7 +70,10 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
             children: [
               ClipRRect(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
-                  child: Image.asset('lib/images/ski.jpg')
+                  child: Hero(
+                    tag: event.getId(),
+                      child: Image.asset('lib/images/ski.jpg')
+                  )
               ),
               Container(
                 margin: EdgeInsets.all(16),
@@ -121,7 +127,9 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
                         Container(
                           width: 102,
                           child: TextButton(
-                              onPressed: (){},
+                              onPressed: (){
+                                onUpdateRequest(event.getId(), 2);
+                              },
                               child: const Text(
                                 'Принять',
                                 style: TextStyle(
@@ -140,7 +148,9 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
                           width: 140,
                           padding: EdgeInsets.only(left: 40),
                           child: TextButton(
-                              onPressed: (){},
+                              onPressed: (){
+                                onUpdateRequest(event.getId(), 1);
+                              },
                               child: const Text(
                                 'Отклонить',
                                 style: TextStyle(
@@ -165,4 +175,15 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
       ),
     );
   }
+
+  Future<void> onUpdateRequest(String event_id, int status) async{
+    var viewModel = context.read<MainViewModel>();
+    await viewModel.updateRequest(event_id, status);
+  }
+
+  Future<void> onRefreshList() async{
+    MainViewModel viewModel = context.read<MainViewModel>();
+    await viewModel.downloadRequests();
+  }
+
 }

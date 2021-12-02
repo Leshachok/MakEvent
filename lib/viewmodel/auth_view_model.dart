@@ -10,9 +10,8 @@ class AuthViewModel with ChangeNotifier{
     repository = Repository();
   }
 
-  void authorize(SharedPreferences prefs, dynamic json) async{
-    String id = json['_id'];
-    prefs.setString("user_id", id);
+  void authorize(dynamic json){
+    repository.authorize(json);
   }
 
   Future<String> register(String email, String password){

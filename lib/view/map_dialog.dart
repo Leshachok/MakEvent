@@ -54,7 +54,6 @@ class _GoogleMapDialogState extends State<GoogleMapDialog> {
     components.forEachIndexed((index, element) {
       if(index==1) place += element.longName!;
     });
-    place = place.substring(0, place.length - 2);
     model.setLocation(place);
     model.latitude = latLng.latitude;
     model.longitude = latLng.longitude;
