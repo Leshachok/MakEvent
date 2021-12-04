@@ -12,8 +12,9 @@ class CreateEventViewModel with ChangeNotifier{
   late String title;
   late String description;
   late String date;
+  late bool isOutdoor;
   String time = "";
-  String location = 'Выбрать место встречи';
+  String location = 'Обрати місце зустрічі';
   double latitude = 0.0;
   double longitude = 0.0;
   List<User> users = [];
@@ -46,9 +47,7 @@ class CreateEventViewModel with ChangeNotifier{
   }
 
   Future<void> addParticipant(String user_id, String event_id, int status) async{
-
     await repository.addParticipant(user_id, event_id, status);
-
   }
 
   Future<String> findUserbyNickname(String nickname) async{

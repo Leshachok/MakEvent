@@ -1,6 +1,4 @@
 
-import 'dart:ffi';
-
 class Event{
 
   String _id = "";
@@ -10,8 +8,9 @@ class Event{
   String location = "";
   double latitude = 0;
   double longitude = 0;
+  bool isOutdoor = false;
 
-  Event(this.title, this.description, this.date, this.location, this.latitude, this.longitude);
+  Event(this.title, this.description, this.date, this.location, this.latitude, this.longitude, this.isOutdoor);
 
   Event.get(this._id, this.title, this.description, this.date, this.location, this.latitude, this.longitude);
 

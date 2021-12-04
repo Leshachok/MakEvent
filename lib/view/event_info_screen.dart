@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:meeting_app/data/event.dart';
 import 'package:meeting_app/data/participant.dart';
 import 'package:meeting_app/viewmodel/main_view_model.dart';
+import 'package:provider/src/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class EventInfoScreen extends StatefulWidget {
 
   late Event _event;
-  late MainViewModel viewModel;
 
-  EventInfoScreen(this._event, this.viewModel);
+  EventInfoScreen(this._event);
 
   @override
-  _EventInfoScreenState createState() => _EventInfoScreenState(_event, viewModel);
+  _EventInfoScreenState createState() => _EventInfoScreenState(_event);
 }
 
 class _EventInfoScreenState extends State<EventInfoScreen> {
@@ -20,18 +20,25 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
   List<Participant> participants = [];
   late Event _event;
   late MainViewModel viewModel;
+  bool isDeleteButtonVisible = false;
 
-  _EventInfoScreenState(this._event, this.viewModel);
+  _EventInfoScreenState(this._event);
 
   @override
   void initState() {
     super.initState();
+    viewModel = context.read<MainViewModel>();
     getParticipants();
     // getJsonFromFile();
   }
 
   void getParticipants() async{
     participants = await viewModel.getParticipants(_event.getId());
+    participants.forEach((element) {
+      if(element.status == 3 && viewModel.checkUserID(element.user.getId())){
+        isDeleteButtonVisible = true;
+      }
+    });
     setState(() {
 
     });
@@ -63,18 +70,21 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
                       ),
                     ),
                   ),
-                  Positioned(
-                      top: 48,
-                      right: 16,
-                      child: ElevatedButton(
-                        onPressed: onDeleteButtonPressed,
-                        child: const Icon(Icons.restore_from_trash),
-                        style: ElevatedButton.styleFrom(
-                            shape: CircleBorder(),
-                            fixedSize: Size(50, 50),
-                            primary: const Color.fromARGB(150, 0, 0, 0)
+                  Visibility(
+                    visible: isDeleteButtonVisible,
+                    child: Positioned(
+                        top: 48,
+                        right: 16,
+                        child: ElevatedButton(
+                          onPressed: onDeleteButtonPressed,
+                          child: const Icon(Icons.restore_from_trash),
+                          style: ElevatedButton.styleFrom(
+                              shape: CircleBorder(),
+                              fixedSize: Size(50, 50),
+                              primary: const Color.fromARGB(150, 0, 0, 0)
+                          ),
                         ),
-                      ),
+                    ),
                   )
                 ]
             ),
@@ -275,20 +285,21 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
         context: context,
         builder: (BuildContext context){
           return AlertDialog(
-            title: Text('Вы действительно хотите отменить встречу?'),
+            title: Text('Вы дійсно хочете відмінити зустріч?'),
             content: null,
             actions: [
               TextButton(
                 onPressed: (){
                   Navigator.pop(context);
                 },
-                child: Text('Нет'),
+                child: Text('Ні'),
               ),
               TextButton(
                 onPressed: (){
                   Navigator.pop(context);
+                  Navigator.pop(context, 'delete');
                 },
-                child: Text('Да'),
+                child: Text('Так'),
               )
             ],
           );
@@ -304,7 +315,7 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
     }
   }
 
-  void onBackButtonPressed() => Navigator.pop(context);
+  void onBackButtonPressed() => Navigator.pop(context, 'close');
 
   Widget getStatus(int pos){
     Color textColor = participants[pos].status == 0 ? Colors.grey :  participants[pos].status == 1 ? Color.fromRGBO(255, 23, 68, 1) : participants[pos].status == 2 ? Colors.green : Colors.blue;

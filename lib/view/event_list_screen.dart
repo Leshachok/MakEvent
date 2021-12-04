@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:meeting_app/data/event.dart';
 import 'event_create_screen.dart';
 import 'event_info_screen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class EventListScreen extends StatefulWidget {
   const EventListScreen({Key? key}) : super(key: key);
@@ -91,15 +92,15 @@ class _EventListScreenState extends State<EventListScreen> {
 
   Widget getRow(Event event) {
     var location = event.location;
-    if(location.length > 34) location = location.substring(0, 33) + '..';
+    if(location.length > 30) location = location.substring(0, 29) + '..';
     timeDilation = 2.0;
 
     return GestureDetector(
-      onTap: (){
-        var viewModel = context.read<MainViewModel>();
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => EventInfoScreen(event, viewModel)
+      onTap: () async{
+        var result = await Navigator.push(context,
+            MaterialPageRoute(builder: (context) => EventInfoScreen(event)
             ));
+        if(result == 'delete') onDeleteEvent(event.getId());
       },
       child: Padding(
         padding: const EdgeInsets.only(bottom: 16),
@@ -170,18 +171,33 @@ class _EventListScreenState extends State<EventListScreen> {
     );
   }
 
-  void onFloatingButtonPressed(){
-    Navigator.push(context,
+  void onFloatingButtonPressed() async{
+    var result = await Navigator.push(context,
         MaterialPageRoute(builder: (context) => ChangeNotifierProvider(
             create: (BuildContext context) => CreateEventViewModel(),
             child: EventCreateScreen()
-        )
-        ));
+        )));
+    if(result == 'create') {
+      Fluttertoast.showToast(
+        msg: "Зустріч створено!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+      );
+      onRefreshList();
+    }
   }
 
   Future<void> onRefreshList() async{
     MainViewModel viewModel = context.read<MainViewModel>();
     await viewModel.downloadEvents();
+  }
+
+  void onDeleteEvent(String event_id) async{
+    var time = DateTime.now().microsecondsSinceEpoch;
+    MainViewModel viewModel = context.read<MainViewModel>();
+    await viewModel.deleteEvent(event_id);
+    var after_time = DateTime.now().microsecondsSinceEpoch;
+    print(after_time - time);
   }
 
 }

@@ -50,7 +50,7 @@ class _SendRequestDialogState extends State<SendRequestDialog> {
         ),
         SafeArea(
           child: Container(
-            height: 200,
+            height: 300,
             width: 240,
             child: ListView.builder(
                   itemCount: model.users.length,
@@ -96,6 +96,7 @@ class _SendRequestDialogState extends State<SendRequestDialog> {
 
   Future<void> findUserbyNickname(String nickname) async{
     var message = "";
+    var before_time = DateTime.now().microsecondsSinceEpoch;
     if(model.users.where((element) => element.name == nickname).isNotEmpty){
       message = "Користувач вже запрошений!";
       Fluttertoast.showToast(
@@ -105,27 +106,24 @@ class _SendRequestDialogState extends State<SendRequestDialog> {
       );
       return;
     }
-    var response = model.findUserbyNickname(nickname);
+    var response = await model.findUserbyNickname(nickname);
+    var after_time = DateTime.now().microsecondsSinceEpoch;
+    print(after_time - before_time);
     dynamic json = "";
     User user;
-    response.then((value) => {
-      json = jsonDecode(value),
-      if(json['message'] != null){
-        message = json['message'],
-        Fluttertoast.showToast(
-          msg: message,
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-        )
-      }else{
-        user = User.fromJsonAsUser(json),
-        this.nickname = "",
-        model.addUser(user),
-        setState(() { }),
-      }
-    });
-
-
+    json = jsonDecode(response);
+    if(json['message'] != null){
+      message = json['message'];
+      Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+      );
+    }else{
+      user = User.fromJsonAsUser(json);
+      this.nickname = "";
+      model.addUser(user);
+      setState(() { });
+    }
   }
-
 }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:meeting_app/view/login_screen.dart';
+import 'package:meeting_app/view/main_screen.dart';
+import 'package:meeting_app/view/welcome_screen.dart';
 import 'package:meeting_app/viewmodel/auth_view_model.dart';
+import 'package:meeting_app/viewmodel/main_view_model.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(MeetingApp());
 
@@ -12,24 +15,43 @@ class MeetingApp extends StatefulWidget {
 
 class _MeetingAppState extends State<MeetingApp> {
 
-  @override
-  void initState() {
-    super.initState();
+  _MeetingAppState(){
+    initPrefs();
   }
 
-  @override
-  Widget build(BuildContext context) => MaterialApp(
-        title: 'Meeting App',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primaryColor: Colors.red
-        ),
-        home: ChangeNotifierProvider(
-            create: (BuildContext context) => AuthViewModel(),
-            child: LoginScreen()
-        ),
-  );
+  Widget? screen;
 
+  @override
+  Widget build(BuildContext context) {
+
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+            create: (BuildContext context) => AuthViewModel()),
+        ChangeNotifierProvider(create: (BuildContext context) {
+          var viewModel = MainViewModel(context);
+          return viewModel;
+        }
+        )
+      ],
+      child: MaterialApp(
+          title: 'Meeting App',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+              primaryColor: Colors.red
+          ),
+          home: screen
+      ),
+    );
+  }
+
+  initPrefs() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    screen = preferences.containsKey("user_id") ? MainScreen() : WelcomeScreen();
+    setState(() {
+
+    });
+  }
 
 }
 

@@ -14,49 +14,45 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen>{
 
-var currentIndex = 0;
+  var currentIndex = 0;
 
   List<Widget> fragments = [
     AccountScreen(),
     EventListScreen(),
-    InvitationsScreen()
+    RequestScreen()
   ];
-
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create:  (BuildContext context) => MainViewModel(context)),
-      ],
-      child: Scaffold(
-        body: fragments[currentIndex],
-        bottomNavigationBar: BottomNavigationBar(
-          selectedItemColor: const Color.fromRGBO(198, 255, 0, 1),
-          backgroundColor: const Color.fromRGBO(255, 23, 68, 1),
-          onTap: onBottomAppbarTapped,
-          currentIndex:  currentIndex,
-          items: const [
-            BottomNavigationBarItem(
-                label: "Акаунт",
-                icon: Icon(
-                    Icons.account_circle
-                )
-            ),
-            BottomNavigationBarItem(
-                label: "Зустрічі",
-                icon: Icon(
-                    Icons.message
-                )
-            ),
-            BottomNavigationBarItem(
-                label: "Запрошення",
-                icon: Icon(
-                    Icons.notifications_active
-                )
-            ),
-          ],
-        ),
+    initViewModel();
+
+    return Scaffold(
+      body: fragments[currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: const Color.fromRGBO(198, 255, 0, 1),
+        backgroundColor: const Color.fromRGBO(255, 23, 68, 1),
+        onTap: onBottomAppbarTapped,
+        currentIndex:  currentIndex,
+        items: const [
+          BottomNavigationBarItem(
+              label: "Акаунт",
+              icon: Icon(
+                  Icons.account_circle
+              )
+          ),
+          BottomNavigationBarItem(
+              label: "Зустрічі",
+              icon: Icon(
+                  Icons.message
+              )
+          ),
+          BottomNavigationBarItem(
+              label: "Запрошення",
+              icon: Icon(
+                  Icons.notifications_active
+              )
+          ),
+        ],
       ),
     );
   }
@@ -65,6 +61,10 @@ var currentIndex = 0;
     setState(() {
       currentIndex = position;
     });
+  }
+
+  initViewModel() {
+     context.read<MainViewModel>().init();
   }
 
 }

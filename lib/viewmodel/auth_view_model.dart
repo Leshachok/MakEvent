@@ -22,4 +22,8 @@ class AuthViewModel with ChangeNotifier{
     return repository.login(email, password);
   }
 
+  Future<String> findUserByEmail(String email){
+    return repository.findUserByEmail(email);
+  }
+
 }

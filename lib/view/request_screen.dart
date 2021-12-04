@@ -6,14 +6,14 @@ import 'package:provider/provider.dart';
 
 import 'event_info_screen.dart';
 
-class InvitationsScreen extends StatefulWidget {
-  const InvitationsScreen({Key? key}) : super(key: key);
+class RequestScreen extends StatefulWidget {
+  const RequestScreen({Key? key}) : super(key: key);
 
   @override
-  _InvitationsScreenState createState() => _InvitationsScreenState();
+  _RequestScreenState createState() => _RequestScreenState();
 }
 
-class _InvitationsScreenState extends State<InvitationsScreen> {
+class _RequestScreenState extends State<RequestScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +25,7 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
                 Row(
                   children: const [
                     Text(
-                      ' Приглашения',
+                      ' Запрошення',
                       style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold
@@ -57,12 +57,11 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
 
   Widget getRow(Event event) {
     var location = event.location;
-    if(location.length > 36) location = location.substring(0, 35) + '..';
+    if(location.length > 30) location = location.substring(0, 29) + '..';
     return GestureDetector(
       onTap: (){
-        var viewModel = context.read<MainViewModel>();
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => EventInfoScreen(event, viewModel)
+            MaterialPageRoute(builder: (context) => EventInfoScreen(event)
             ));
       },
       child: Card(
@@ -125,13 +124,13 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
                     Row(
                       children: [
                         Container(
-                          width: 102,
+                          width: 110,
                           child: TextButton(
                               onPressed: (){
                                 onUpdateRequest(event.getId(), 2);
                               },
                               child: const Text(
-                                'Принять',
+                                'Погодитись',
                                 style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.white
@@ -145,14 +144,14 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
                           ),
                         ),
                         Container(
-                          width: 140,
+                          width: 160,
                           padding: EdgeInsets.only(left: 40),
                           child: TextButton(
                               onPressed: (){
                                 onUpdateRequest(event.getId(), 1);
                               },
                               child: const Text(
-                                'Отклонить',
+                                'Відмовитись',
                                 style: TextStyle(
                                     fontSize: 16,
                                     color: Color.fromRGBO(255, 23, 68, 1)
@@ -177,8 +176,11 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
   }
 
   Future<void> onUpdateRequest(String event_id, int status) async{
+    var before_time = DateTime.now().microsecondsSinceEpoch;
     var viewModel = context.read<MainViewModel>();
     await viewModel.updateRequest(event_id, status);
+    var after_time = DateTime.now().microsecondsSinceEpoch;
+    print(after_time - before_time);
   }
 
   Future<void> onRefreshList() async{

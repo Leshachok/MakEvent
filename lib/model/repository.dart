@@ -8,8 +8,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class Repository{
+
   static final Repository _singleton = Repository._internal();
   late SharedPreferences prefs;
+  static const KEY_USER_ID = "user_id";
+  static const KEY_USER_NAME = "user_name";
+  static const KEY_USER_VACCINATION = "user_vaccination";
 
   factory Repository() {
     return _singleton;
@@ -19,7 +23,7 @@ class Repository{
     initPrefs();
   }
 
-  void initPrefs() async{
+  Future<void> initPrefs() async{
     prefs = await SharedPreferences.getInstance();
   }
 
@@ -52,30 +56,47 @@ class Repository{
   void authorize(dynamic json){
     String id = json['_id'];
     String name = json['name'];
-    prefs.setString("user_id", id);
-    prefs.setString("user_name", name);
+    String vaccination = json['vaccination'];
+    prefs.setString(KEY_USER_ID, id);
+    prefs.setString(KEY_USER_NAME, name);
+    prefs.setString(KEY_USER_VACCINATION, vaccination);
   }
 
-  Future<String> updateNickname(String newName) async{
-    var user_id = prefs.getString("user_id");
+  bool isAuthorized() => prefs.containsKey(KEY_USER_ID);
+
+  logout(){
+    prefs.remove(KEY_USER_ID);
+    prefs.remove(KEY_USER_NAME);
+  }
+
+  Future<String> updateUser(String newName, String vaccination) async{
+    var userId = prefs.getString(KEY_USER_ID);
     final response = await http.post(
       Uri.parse('https://appmeeting.azurewebsites.net/user/update'),
-      body: { "name": newName, "user_id": user_id },
+      body: { "name": newName, "vaccination": vaccination, KEY_USER_ID: userId },
     );
     return response.body;
   }
 
-  String getUserName() => prefs.getString("user_name")!;
+  String getUserName() => prefs.getString(KEY_USER_NAME)!;
+
+  String getVaccination() => prefs.getString(KEY_USER_VACCINATION)!;
+
+  bool checkUserID(String userId) => prefs.getString(KEY_USER_ID)! == userId;
 
   void setUsername(String username){
-    prefs.setString("user_name", username);
+    prefs.setString(KEY_USER_NAME, username);
+  }
+
+  void setVaccination(String vaccination){
+    prefs.setString(KEY_USER_VACCINATION, vaccination);
   }
 
   Future<List<Event>> getEvents() async{
-    var user_id = prefs.getString("user_id");
+    var userId = prefs.getString(KEY_USER_ID);
     final response = await http.post(
         Uri.parse('https://appmeeting.azurewebsites.net/events'),
-        body: { "user_id": user_id }
+        body: { KEY_USER_ID: userId }
     );
     List<dynamic> data = jsonDecode(response.body) as List<dynamic>;
     List<Event> events = data.map<Event>((json) => Event.fromJson(json)).toList();
@@ -83,19 +104,19 @@ class Repository{
   }
 
   Future<List<Event>> getRequests() async{
-    var user_id = prefs.getString("user_id");
+    var userId = prefs.getString(KEY_USER_ID);
     final response = await http.post(
         Uri.parse('https://appmeeting.azurewebsites.net/requests'),
-        body: { "user_id": user_id }
+        body: { KEY_USER_ID: userId }
     );
     List<dynamic> data = jsonDecode(response.body) as List<dynamic>;
     List<Event> events = data.map<Event>((json) => Event.fromJson(json)).toList();
     return events;
   }
 
-  Future<String> addParticipant(String user_id, String event_id, int status) async{
+  Future<String> addParticipant(String userId, String eventId, int status) async{
 
-    var body = Participation(event_id, user_id, status);
+    var body = Participation(eventId, userId, status);
     final response = await http.post(
         Uri.parse('https://appmeeting.azurewebsites.net/event/participant'),
         headers: {
@@ -120,9 +141,19 @@ class Repository{
     return createdEvent;
   }
 
-  Future<String> updateRequest(String event_id, int status) async{
-    var user_id = prefs.getString("user_id")!;
-    var body = Participation(event_id, user_id, status);
+  Future<void> deleteEvent(String eventId) async{
+
+    final response = await http.post(
+      Uri.parse('https://appmeeting.azurewebsites.net/event/delete'),
+      body: {"event_id": eventId},
+    );
+    dynamic json = jsonDecode(response.body);
+    print(json);
+  }
+
+  Future<String> updateRequest(String eventId, int status) async{
+    var userId = prefs.getString(KEY_USER_ID)!;
+    var body = Participation(eventId, userId, status);
 
     final response = await http.post(
         Uri.parse('https://appmeeting.azurewebsites.net/participant/update'),
@@ -135,10 +166,18 @@ class Repository{
     return response.body;
   }
 
+  Future<String> findUserByEmail(String email) async{
+    final response = await http.post(
+        Uri.parse('https://appmeeting.azurewebsites.net/user/findByEmail'),
+        body: {"email": email}
+    );
+    return response.body;
+  }
+
   //TODO себя нельзя приглашать
   Future<String> findUserbyNickname(String nickname) async{
-    var user_name = prefs.getString("user_name")!;
-    if(nickname == user_name) {
+    var userName = prefs.getString(KEY_USER_NAME)!;
+    if(nickname == userName) {
       return """{"message": "Не можна запросити себе на зустріч!"}""";
     }
     final response = await http.post(
@@ -149,15 +188,16 @@ class Repository{
     return response.body;
   }
 
-  Future<List<Participant>> getParticipants(String event_id) async{
+  Future<List<Participant>> getParticipants(String eventId) async{
     final response = await http.post(
         Uri.parse('https://appmeeting.azurewebsites.net/event/participants'),
-        body: { "event_id": event_id }
+        body: { "event_id": eventId }
     );
     List<dynamic> data = jsonDecode(response.body) as List<dynamic>;
     List<Participant> participants = data.map<Participant>((json) => Participant.fromJson(json)).toList();
     return participants;
   }
+
 
 
 }

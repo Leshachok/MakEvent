@@ -18,6 +18,7 @@ class EventCreateScreen extends StatefulWidget {
 class _EventCreateScreenState extends State<EventCreateScreen> {
 
   late CreateEventViewModel viewModel;
+  bool isCreateButtonVisible = true;
 
   _EventCreateScreenState();
 
@@ -57,7 +58,7 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
                         },
                         maxLength: 20,
                         decoration: InputDecoration(
-                            hintText: 'Название встречи',
+                            hintText: 'Назва зустрічі',
                             hintStyle: const TextStyle(
                               color: Color.fromRGBO(94, 98, 102, 1),
                             ),
@@ -87,7 +88,7 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
                           maxLines: 1,
                           maxLength: 66,
                           decoration: InputDecoration(
-                              hintText: 'Описание',
+                              hintText: 'Опис',
                               hintStyle: const TextStyle(
                                 color: Color.fromRGBO(94, 98, 102, 1),
                               ),
@@ -221,7 +222,7 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
                             padding: EdgeInsets.only(left: 28),
                             child: GestureDetector(
                               child: const Text(
-                                'Выбрать фото',
+                                'Обрати фото',
                                 style: TextStyle(
                                     color: Color.fromRGBO(94, 98, 102, 1),
                                     fontSize: 16
@@ -263,7 +264,7 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
                           padding: EdgeInsets.only(left: 10),
                           child: GestureDetector(
                             child: const Text(
-                              'ПРИГЛАСИТЬ ДРУЗЕЙ',
+                              'ЗАПРОСИТИ ДРУЗІВ',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Color.fromRGBO(255, 32, 75, 25),
@@ -279,23 +280,26 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
             ),
           ),
         floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
-        floatingActionButton: Container(
-          margin: const EdgeInsets.all(16),
-          width: 320,
-            child: TextButton(
-                onPressed: onCreateButtonPressed,
-                child: const Text(
-                    'Создать встречу',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white
-                  ),
-                )
-          ),
-          decoration: const BoxDecoration(
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              color: Color.fromRGBO(255, 23, 68, 1)
+        floatingActionButton: Visibility(
+          visible: isCreateButtonVisible,
+          child: Container(
+            margin: const EdgeInsets.all(16),
+            width: 320,
+              child: TextButton(
+                  onPressed: onCreateButtonPressed,
+                  child: const Text(
+                      'Створити зустріч',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white
+                    ),
+                  )
+            ),
+            decoration: const BoxDecoration(
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.all(Radius.circular(4)),
+                color: Color.fromRGBO(255, 23, 68, 1)
+            ),
           ),
         )
     );
@@ -334,9 +338,9 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
     return (value < 10) ? '0$value' : value.toString();
   }
 
-  void onBackButtonPressed() => Navigator.pop(context);
+  void onBackButtonPressed() => Navigator.pop(context, 'cancel');
 
-  void onCreateButtonPressed(){
+  void onCreateButtonPressed() async{
     CreateEventViewModel model = context.read<CreateEventViewModel>();
     if(!(title.isNotEmpty && description.isNotEmpty && date.isNotEmpty && location.isNotEmpty && model.latitude != 0.0)) {
       Fluttertoast.showToast(
@@ -345,10 +349,14 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
           gravity: ToastGravity.CENTER,
       );
     }else{
-      Event newEvent = Event(title, description, date + ' ' + time, location, model.latitude, model.longitude);
+      isCreateButtonVisible = false;
+      setState(() {
+
+      });
+      Event newEvent = Event(title, description, date + ' ' + time, location, model.latitude, model.longitude, model.isOutdoor);
       // var model = context.read<MainViewModel>();
-      model.createEvent(newEvent);
-      Navigator.pop(context);
+      await model.createEvent(newEvent);
+      Navigator.pop(context, 'create');
     }
   }
 
@@ -358,7 +366,7 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
         context: context,
         builder: (context){
               return AlertDialog(
-                title: const Text('Выбрать место встречи'),
+                title: const Text('Обрати місце зустрічі'),
                 contentPadding: EdgeInsets.only(top: 16, left: 24, right: 24),
                 content: SizedBox(
                     height: 360,
@@ -368,7 +376,7 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
                 actions: [
                   TextButton(
                       onPressed: closeDialog,
-                      child: Text('Подтвердить'))
+                      child: Text('Підтвердити'))
                 ],
 
               );

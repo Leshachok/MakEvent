@@ -2,33 +2,28 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:meeting_app/viewmodel/auth_view_model.dart';
 import 'package:meeting_app/viewmodel/main_view_model.dart';
 import 'package:provider/src/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
 import 'main_screen.dart';
 
-class LoginScreen extends StatefulWidget {
+class RegisterScreen extends StatefulWidget {
   var email;
-  LoginScreen(this.email, {Key? key}) : super(key: key);
+  RegisterScreen(this.email, {Key? key}) : super(key: key);
 
   @override
-  LoginScreenState createState() => LoginScreenState(email);
+  _RegisterScreenState createState() => _RegisterScreenState(email);
 }
 
-class LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
 
-  LoginScreenState(this.email);
-  late AuthViewModel viewModel;
-  String email = "";
-  String password = "";
+  var email = "";
+  var password = "";
+  var confirmPassword = "";
+  _RegisterScreenState(this.email);
 
-  @override
-  void initState(){
-    super.initState();
-    viewModel = context.read<AuthViewModel>();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +51,7 @@ class LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Text(
-                    'Увійти',
+                    'Створити акаунт',
                     style: TextStyle(
                       fontSize: 28.0,
                       fontWeight: FontWeight.bold,
@@ -66,7 +61,7 @@ class LoginScreenState extends State<LoginScreen> {
                   Container(
                     margin: EdgeInsets.only(top: 32),
                     padding: EdgeInsets.symmetric(vertical: 30, horizontal: 16),
-                    height: 230,
+                    height: 292,
                     width: 396,
                     color: Color.fromRGBO(0, 0, 0, 0.2),
                     child: Column(
@@ -84,7 +79,8 @@ class LoginScreenState extends State<LoginScreen> {
                             onChanged: (text){
 
                             },
-                            initialValue: email,
+                            initialValue: email
+                            ,
                             maxLines: 1,
                             decoration: const InputDecoration(
                               hintText: 'Введіть свій email',
@@ -122,6 +118,31 @@ class LoginScreenState extends State<LoginScreen> {
                         ),
                         Container(
                           height: 46,
+                          padding: EdgeInsets.only(left: 12),
+                          margin: const EdgeInsets.only(top: 16),
+                          decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(4.0)
+                              )
+                          ),
+                          child: TextFormField(
+                            onChanged: (text){
+                              confirmPassword = text;
+                            },
+                            maxLines: 1,
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              hintText: 'Підтвердіть пароль',
+                              hintStyle: TextStyle(
+                                color: Color.fromRGBO(94, 98, 102, 1),
+                              ),
+                              counterText: '',
+                            ),
+                          ),
+                        ),
+                        Container(
+                          height: 46,
                           margin: const EdgeInsets.only(top: 16),
                           decoration: const BoxDecoration(
                               color: Color.fromRGBO(255, 23, 68, 1),
@@ -131,7 +152,7 @@ class LoginScreenState extends State<LoginScreen> {
                           ),
                           child: TextButton(
                             onPressed: () async {
-                              var message = await onLogin(email, password);
+                              var message = await onRegister(email, password);
                               Fluttertoast.showToast(
                                 msg: message,
                                 toastLength: Toast.LENGTH_SHORT,
@@ -140,7 +161,7 @@ class LoginScreenState extends State<LoginScreen> {
                             },
                             child: const Center(
                               child: Text(
-                                'Увійти',
+                                'Зареєструватись',
                                 style: TextStyle(
                                     color: Colors.white
                                 ),
@@ -160,15 +181,18 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 
-
-  Future<String> onLogin(String email, String password) async{
+  Future<String> onRegister(String email, String password) async{
+    var viewModel = context.read<AuthViewModel>();
     bool emailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(email);
     if(!emailValid) return "Введена пошта недійсна!";
+    if(password != confirmPassword) return "Паролі не співпадають";
     if(password.length < 8) return "Пароль має бути більше 7 символів!";
 
-    var response = await viewModel.login(email, password);
-    dynamic json = jsonDecode(response);
+    var response = await viewModel.register(email, password);
+    dynamic json;
+    json = jsonDecode(response);
     print(json);
+
     if(json['message'] != null){
       return json['message'];
     } else authorize(json);
@@ -176,9 +200,10 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   void authorize(dynamic json){
+    var viewModel = context.read<AuthViewModel>();
     viewModel.authorize(json);
-    Navigator.pushAndRemoveUntil(
-      context, MaterialPageRoute(builder: (context) => MainScreen()), (r) => false
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => MainScreen())
     );
   }
 

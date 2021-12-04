@@ -48,12 +48,11 @@ class _GoogleMapDialogState extends State<GoogleMapDialog> {
   geoCode(LatLng latLng) async{
     var googleGeocoding = GoogleGeocoding("AIzaSyD4HeEGDDGBismjzrzZgn0dDYcNFGW2d6Q");
     var result = await googleGeocoding.geocoding.getReverse(LatLon(latLng.latitude, latLng.longitude), language: 'uk');
-    var components = result!.results!.first.addressComponents!;
-    var place = "";
-    //TODO
-    components.forEachIndexed((index, element) {
-      if(index==1) place += element.longName!;
-    });
+    var place = result!.results!.first.formattedAddress!;
+    var home = result.results!.first.types;
+    var isOutdoor = home!.contains('plus_code');
+    if(place.length > 99) place = place.substring(0, 98);
+    model.isOutdoor = isOutdoor;
     model.setLocation(place);
     model.latitude = latLng.latitude;
     model.longitude = latLng.longitude;
