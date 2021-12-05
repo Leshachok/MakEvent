@@ -109,72 +109,66 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
                     Divider(
                       height: 1,
                     ),
-                    Container(
-                        height: 72,
-                        padding: EdgeInsets.only(left: 10),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.calendar_today,
-                              color: Color.fromRGBO(94, 98, 102, 1),
-                              size: 24,
-                            ),
-                            GestureDetector(
-                              onTap: onDateChoosingClicked,
-                              child: Container(
-                                padding: EdgeInsets.only(left: 28),
-                                child: GestureDetector(
-                                  child: Text(
-                                    date,
-                                    style: const TextStyle(
-                                        color: Color.fromRGBO(94, 98, 102, 1),
-                                        fontSize: 16
-                                    ),
-                                  ),
-                                ),
+                    GestureDetector(
+                      onTap: onDateChoosingClicked,
+                      child: Container(
+                          height: 72,
+                          padding: EdgeInsets.only(left: 10),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.calendar_today,
+                                color: Color.fromRGBO(94, 98, 102, 1),
+                                size: 24,
                               ),
-                            )
-                          ],
-                        ),
-                    ),
-                    Divider(
-                      height: 1,
-                    ),
-                    Container(
-                      height: 72,
-                      padding: EdgeInsets.only(left: 10),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.access_time,
-                            color: Color.fromRGBO(94, 98, 102, 1),
-                            size: 24,
-                          ),
-                          GestureDetector(
-                            onTap: onTimeChoosingClicked,
-                            child: Container(
-                              padding: EdgeInsets.only(left: 28),
-                              child: GestureDetector(
+                              Container(
+                                padding: EdgeInsets.only(left: 28),
                                 child: Text(
-                                  time.isNotEmpty ? time : "Обрати час",
+                                  date,
                                   style: const TextStyle(
                                       color: Color.fromRGBO(94, 98, 102, 1),
                                       fontSize: 16
                                   ),
                                 ),
-                              ),
+                              )
+                            ],
+                          ),
+                      ),
+                    ),
+                    Divider(
+                      height: 1,
+                    ),
+                    GestureDetector(
+                      onTap: onTimeChoosingClicked,
+                      child: Container(
+                        height: 72,
+                        padding: EdgeInsets.only(left: 10),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.access_time,
+                              color: Color.fromRGBO(94, 98, 102, 1),
+                              size: 24,
                             ),
-                          )
-                        ],
+                            Container(
+                              padding: EdgeInsets.only(left: 28),
+                              child: Text(
+                                time.isNotEmpty ? time : "Обрати час",
+                                style: const TextStyle(
+                                    color: Color.fromRGBO(94, 98, 102, 1),
+                                    fontSize: 16
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                     const Divider(
                       height: 1,
                     ),
                     GestureDetector(
-                      onTap: ()  {
-                        onPlaceChoosingClicked();
-                      },
+                      onTap: onPlaceChoosingClicked,
                       child: Container(
                           height: 72,
                           padding: const EdgeInsets.only(left: 10),
@@ -220,13 +214,11 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
                           ),
                           Container(
                             padding: EdgeInsets.only(left: 28),
-                            child: GestureDetector(
-                              child: const Text(
-                                'Обрати фото',
-                                style: TextStyle(
-                                    color: Color.fromRGBO(94, 98, 102, 1),
-                                    fontSize: 16
-                                ),
+                            child: const Text(
+                              'Обрати фото (недоступно)',
+                              style: TextStyle(
+                                  color: Color.fromRGBO(94, 98, 102, 1),
+                                  fontSize: 16
                               ),
                             ),
                           )
@@ -238,29 +230,29 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
                     ),
                   ],
                 ),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 32, horizontal: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: 40,
-                        width: 40,
-                        child: RawMaterialButton(
-                          shape: const CircleBorder(),
-                          elevation: 0.0,
-                          fillColor: const Color.fromRGBO(255, 32, 75, 230),
-                          child: const Icon(
-                            Icons.add,
-                            size: 32,
-                            color: Color.fromRGBO(255, 23, 68, 1),
+                GestureDetector(
+                  onTap: onAddFriendClicked,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 32, horizontal: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 40,
+                          width: 40,
+                          child: RawMaterialButton(
+                            shape: const CircleBorder(),
+                            elevation: 0.0,
+                            fillColor: const Color.fromRGBO(255, 32, 75, 230),
+                            child: const Icon(
+                              Icons.add,
+                              size: 32,
+                              color: Color.fromRGBO(255, 23, 68, 1),
+                            ),
+                            onPressed: onAddFriendClicked,
                           ),
-                          onPressed: (){},
                         ),
-                      ),
-                      GestureDetector(
-                        onTap: onAddFriendClicked,
-                        child: Container(
+                        Container(
                           padding: EdgeInsets.only(left: 10),
                           child: GestureDetector(
                             child: const Text(
@@ -271,9 +263,9 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
                               ),
                             ),
                           ),
-                        ),
-                      )
-                    ],
+                        )
+                      ],
+                    ),
                   ),
                 )
               ],

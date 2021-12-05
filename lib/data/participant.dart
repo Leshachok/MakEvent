@@ -1,4 +1,4 @@
-import 'package:meeting_app/data//user.dart';
+import 'package:meeting_app/data/user.dart';
 
 class Participant {
   int status = 0;

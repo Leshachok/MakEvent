@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 import 'package:meeting_app/data/event.dart';
 import 'event_create_screen.dart';
 import 'event_info_screen.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class EventListScreen extends StatefulWidget {
   const EventListScreen({Key? key}) : super(key: key);
@@ -26,29 +25,62 @@ class _EventListScreenState extends State<EventListScreen> {
               // ignore: prefer_const_literals_to_create_immutables
               children: [
                 Row(
-                  children: const [
-                    Text(
-                      ' Предстоящие встречи',
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children:  [
+                    const Text(
+                      ' Заплановані зустрічі',
                       style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold
                       ),
                     ),
+                    IconButton(
+                      onPressed: onRefreshList,
+                      icon: const Icon(
+                        Icons.refresh,
+                        color: Colors.blue,
+                      ),
+                    )
                   ],
                 ),
                 Expanded(
                   child: Consumer<MainViewModel>(
                       builder: (context, model, child){
-                        return RefreshIndicator(
-                          onRefresh: onRefreshList,
-                          color: Color.fromRGBO(255, 23, 68, 1),
-                          child: ListView.builder(
+                        Widget child = Center(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Text(
+                                'Нема запланованих зустрічей.',
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 18
+                                ),
+                              ),
+                              Text(
+                                'Спробуйте створити зустріч!',
+                                style: TextStyle(
+                                    color: Colors.grey
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                        if(model.getEvents().isNotEmpty){
+                          child = ListView.builder(
                               itemCount: model.getEvents().length,
                               itemBuilder: (context, position){
                                 var event = model.getEvent(position);
                                 return getRow(event);
                               }
-                          ),
+                          );
+                        }
+
+                        return RefreshIndicator(
+                          onRefresh: onRefreshList,
+                          color: Color.fromRGBO(255, 23, 68, 1),
+                          child: child
                         );
                       }
                   ),
@@ -98,8 +130,10 @@ class _EventListScreenState extends State<EventListScreen> {
     return GestureDetector(
       onTap: () async{
         var result = await Navigator.push(context,
-            MaterialPageRoute(builder: (context) => EventInfoScreen(event)
-            ));
+            MaterialPageRoute(builder: (context) => ChangeNotifierProvider(
+                create: (BuildContext context) => CreateEventViewModel(),
+                child: EventInfoScreen(event)
+            )));
         if(result == 'delete') onDeleteEvent(event.getId());
       },
       child: Padding(
@@ -178,11 +212,16 @@ class _EventListScreenState extends State<EventListScreen> {
             child: EventCreateScreen()
         )));
     if(result == 'create') {
-      Fluttertoast.showToast(
-        msg: "Зустріч створено!",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
+      final snackBar = SnackBar(
+        content: Text('Зустріч створено!'),
+        action: SnackBarAction(
+          label: 'Добре',
+          onPressed: () {
+            // Some code to undo the change.
+          },
+        ),
       );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
       onRefreshList();
     }
   }
@@ -193,11 +232,18 @@ class _EventListScreenState extends State<EventListScreen> {
   }
 
   void onDeleteEvent(String event_id) async{
-    var time = DateTime.now().microsecondsSinceEpoch;
     MainViewModel viewModel = context.read<MainViewModel>();
     await viewModel.deleteEvent(event_id);
-    var after_time = DateTime.now().microsecondsSinceEpoch;
-    print(after_time - time);
+    final snackBar = SnackBar(
+      content: Text('Зустріч відмінено!'),
+      action: SnackBarAction(
+        label: 'Добре',
+        onPressed: () {
+          // Some code to undo the change.
+        },
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
 }

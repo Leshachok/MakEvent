@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:meeting_app/data/event.dart';
 import 'package:meeting_app/model/repository.dart';

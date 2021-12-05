@@ -92,8 +92,8 @@ class MainViewModel with ChangeNotifier{
     getUsername();
   }
 
-  void setVaccination(String vacciantion) {
-    repository.setVaccination(vacciantion);
+  void setVaccination(String vaccination) {
+    repository.setVaccination(vaccination);
     getVaccination();
   }
 
@@ -109,12 +109,19 @@ class MainViewModel with ChangeNotifier{
     notifyListeners();
   }
 
-  void setVaccinationSwitch(bool vacciantion) {
-    vaccinationSwitch = vacciantion;
+  void setVaccinationSwitch(bool vaccination) {
+    vaccinationSwitch = vaccination;
     notifyListeners();
   }
 
-
   bool checkUserID(String user_id) => repository.checkUserID(user_id);
+
+  Future<void> addParticipant(String user_id, String event_id, int status) async{
+    await repository.addParticipant(user_id, event_id, status);
+  }
+
+  Future<String> findUserbyNickname(String nickname) async{
+    return await repository.findUserbyNickname(nickname);
+  }
 
 }

@@ -23,28 +23,60 @@ class _RequestScreenState extends State<RequestScreen> {
               // ignore: prefer_const_literals_to_create_immutables
               children: [
                 Row(
-                  children: const [
-                    Text(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children:  [
+                    const Text(
                       ' Запрошення',
                       style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold
                       ),
                     ),
+                    IconButton(
+                      onPressed: onRefreshList,
+                      icon: const Icon(
+                        Icons.refresh,
+                        color: Colors.blue,
+                      ),
+                    )
                   ],
                 ),
                 Expanded(
                   child: Consumer<MainViewModel>(
                       builder: (context, model, child){
-                        return RefreshIndicator(
-                          onRefresh: onRefreshList,
-                          child: ListView.builder(
+                        Widget child = Center(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Text(
+                                  'Нема запрошень.',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 18
+                                ),
+                              ),
+                              Text(
+                                'Але ви можете самі когось запросити!',
+                                style: TextStyle(
+                                    color: Colors.grey
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                        if(model.getRequests().isNotEmpty){
+                          child = ListView.builder(
                               itemCount: model.getRequests().length,
                               itemBuilder: (context, position){
                                 var event = model.getRequest(position);
                                 return getRow(event);
                               }
-                          ),
+                          );
+                        }
+                        return RefreshIndicator(
+                          onRefresh: onRefreshList,
+                          child: child
                         );
                       }
                   ),
@@ -176,11 +208,21 @@ class _RequestScreenState extends State<RequestScreen> {
   }
 
   Future<void> onUpdateRequest(String event_id, int status) async{
-    var before_time = DateTime.now().microsecondsSinceEpoch;
     var viewModel = context.read<MainViewModel>();
     await viewModel.updateRequest(event_id, status);
-    var after_time = DateTime.now().microsecondsSinceEpoch;
-    print(after_time - before_time);
+    if(status == 2){
+      final snackBar = SnackBar(
+        content: Text('Наразі зустріч знаходиться у розділі "Зустрічі"'),
+        action: SnackBarAction(
+          label: 'Добре',
+          onPressed: () {
+            // Some code to undo the change.
+          },
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+
   }
 
   Future<void> onRefreshList() async{

@@ -133,7 +133,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
      Fluttertoast.showToast(
        msg: toast_message!,
        toastLength: Toast.LENGTH_SHORT,
-       gravity: ToastGravity.CENTER,
+       gravity: ToastGravity.BOTTOM,
      );
   }
 

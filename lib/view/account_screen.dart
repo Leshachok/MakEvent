@@ -124,7 +124,7 @@ class _AccountScreenState extends State<AccountScreen> {
               title: const Text('Змінити дані'),
               contentPadding: EdgeInsets.only(top: 16, left: 24, right: 24),
               content: SizedBox(
-                height: 120,
+                height: 180,
                   child: Column(
                     children: [
                       TextField(
@@ -134,7 +134,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             newUsername = text;
                           },
                           decoration: const InputDecoration(
-                            hintText: 'Введіть нове ім`я',
+                            hintText: "Новий нікнейм (необов'язково)",
                             hintStyle: TextStyle(
                               color: Color.fromRGBO(94, 98, 102, 1),
                             ),
@@ -151,13 +151,16 @@ class _AccountScreenState extends State<AccountScreen> {
                           }),
                         ],
                       ),
+                      const Text("""Увага! Інші користувачі лише бачать ваш нікнейм. Такі дані, як електронна пошта та статус вакцінації не розповсюджується і використувається лише для ідентифікації та визначенні covid-безпечності зустрічі. (Закон України "Про захист персональних даних")""",
+                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                      ),
                     ],
                   )
               ),
               actionsPadding: EdgeInsets.symmetric(vertical: 0),
               actions: [
                 TextButton(
-                    onPressed: closeDialog,
+                    onPressed: () => closeDialog(false),
                     child: const Text('Відхилити')),
                 TextButton(
                     onPressed: onUsernameEditConfirmed,
@@ -173,6 +176,17 @@ class _AccountScreenState extends State<AccountScreen> {
       if(value == null){
         var viewModel = context.read<MainViewModel>();
         viewModel.vaccinationSwitch = viewModel.isVaccinated;
+      }else if(value == true){
+        final snackBar = SnackBar(
+          content: Text('Інформацію змінено!'),
+          action: SnackBarAction(
+            label: 'Добре',
+            onPressed: () {
+              // Some code to undo the change.
+            },
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     });
   }
@@ -186,7 +200,8 @@ class _AccountScreenState extends State<AccountScreen> {
       );
       return;
     }
-    closeDialog();
+    if(newUsername.length < 6) newUsername = "";
+    closeDialog(true);
     var viewModel = context.read<MainViewModel>();
     var response = await viewModel.updateUser(newUsername, newVaccination);
     print(response);
@@ -205,8 +220,8 @@ class _AccountScreenState extends State<AccountScreen> {
     }
   }
 
-  void closeDialog(){
-    Navigator.pop(context, true);
+  void closeDialog(bool value){
+    Navigator.pop(context, value);
   }
 
   showLogoutDialog(){
@@ -217,7 +232,7 @@ class _AccountScreenState extends State<AccountScreen> {
         actionsPadding: EdgeInsets.symmetric(vertical: 0),
         actions: [
           TextButton(
-              onPressed: closeDialog,
+              onPressed: () => closeDialog(false),
               child: const Text('Ні')),
           TextButton(
               onPressed: onLogout,

@@ -25,6 +25,7 @@ class Event{
     'location': location,
     'latitude': latitude,
     'longitude': longitude,
+    'isOutdoor': isOutdoor,
   };
 
   factory Event.fromJson(Map<String, dynamic> json) => Event.get(

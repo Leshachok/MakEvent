@@ -156,7 +156,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               Fluttertoast.showToast(
                                 msg: message,
                                 toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.CENTER,
+                                gravity: ToastGravity.BOTTOM,
                               );
                             },
                             child: const Center(
