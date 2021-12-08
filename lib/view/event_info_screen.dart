@@ -77,8 +77,6 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var loc = _event.location;
-    if(loc.length > 28) loc = loc.substring(0, 27) + '..';
     return Scaffold(
         body: Column(
           children:[
@@ -182,31 +180,26 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
                 ],
               ),
             ),
-
             Container(
               margin: EdgeInsets.only(left: 20, top: 10, bottom: 10, right: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(
-                          Icons.place,
-                          color: Color.fromRGBO(255, 23, 68, 1),
-                          size: 20,
-                        ),
-                        Container(
-                            padding: const EdgeInsets.only(left: 10),
-                            child:  Text(
-                              loc,
-                              style: const TextStyle(
-                                  fontSize: 18
-                              ),
-                            )
+                  const Icon(
+                    Icons.place,
+                    color: Color.fromRGBO(255, 23, 68, 1),
+                    size: 20,
+                  ),
+                  Flexible(
+                    child: Container(
+                        padding: const EdgeInsets.only(left: 10),
+                        child:  Text(
+                          _event.location,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontSize: 18
+                          ),
                         )
-                      ],
                     ),
                   ),
                   IconButton(

@@ -123,8 +123,8 @@ class _EventListScreenState extends State<EventListScreen> {
 
 
   Widget getRow(Event event) {
-    var location = event.location;
-    if(location.length > 30) location = location.substring(0, 29) + '..';
+    // var location = event.location;
+    // if(location.length > 30) location = location.substring(0, 29) + '..';
     timeDilation = 2.0;
 
     return GestureDetector(
@@ -163,21 +163,26 @@ class _EventListScreenState extends State<EventListScreen> {
                             ),
                           ]
                       ),
-                      Row(
-                          children:[
-                            const Icon(
-                              Icons.place_outlined,
-                              size: 20,
-                              color: Color.fromRGBO(0, 0, 0, 150),
-                            ),
-                            Text(
-                              location,
-                              style: const TextStyle(
-                                fontSize: 16,
+                      Container(
+                        child: Row(
+                            children:[
+                              const Icon(
+                                Icons.place_outlined,
+                                size: 20,
                                 color: Color.fromRGBO(0, 0, 0, 150),
                               ),
-                            ),
-                          ]
+                              Flexible(
+                                child: Text(
+                                  event.location,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Color.fromRGBO(0, 0, 0, 150),
+                                  ),
+                                ),
+                              ),
+                            ]
+                        ),
                       ),
                       Padding(
                         padding: EdgeInsets.only(top: 24),

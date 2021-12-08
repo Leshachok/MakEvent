@@ -21,7 +21,6 @@ class _AccountScreenState extends State<AccountScreen> {
   String newUsername = "";
   String newVaccination = "";
 
-
   @override
   Widget build(BuildContext context) {
 
@@ -78,7 +77,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                       Icons.edit,
                                       color: Color.fromRGBO(255, 23, 68, 1),
                                     ),
-                                    onPressed: onUsernameEdit,
+                                    onPressed: onUserDataEdit,
                                   ),
                                 )
                               ],
@@ -112,12 +111,10 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  void onUsernameEdit(){
+  void onUserDataEdit(){
     showDialog(
       context: context,
-      builder: (context){
-
-        return Consumer<MainViewModel>(
+      builder: (context) => Consumer<MainViewModel>(
           builder: (context, model, child) {
             var value = model.vaccinationSwitch;
             return AlertDialog(
@@ -163,15 +160,13 @@ class _AccountScreenState extends State<AccountScreen> {
                     onPressed: () => closeDialog(false),
                     child: const Text('Відхилити')),
                 TextButton(
-                    onPressed: onUsernameEditConfirmed,
+                    onPressed: onUserDataEditConfirmed,
                     child: const Text('Підтвердити'))
               ],
 
             );
           },
-        );
-
-      },
+        )
     ).then((value){
       if(value == null){
         var viewModel = context.read<MainViewModel>();
@@ -191,7 +186,7 @@ class _AccountScreenState extends State<AccountScreen> {
     });
   }
 
-  void onUsernameEditConfirmed() async{
+  void onUserDataEditConfirmed() async{
     if(newUsername.length < 6 && newVaccination.isEmpty){
       Fluttertoast.showToast(
         msg: "Довжина нікнейму повинна бути 6 або більше символів!",

@@ -84,13 +84,10 @@ class Repository{
 
   bool checkUserID(String userId) => prefs.getString(KEY_USER_ID)! == userId;
 
-  void setUsername(String username){
-    prefs.setString(KEY_USER_NAME, username);
-  }
+  setUsername(String username) => prefs.setString(KEY_USER_NAME, username);
 
-  void setVaccination(String vaccination){
-    prefs.setString(KEY_USER_VACCINATION, vaccination);
-  }
+  setVaccination(String vaccination) => prefs.setString(KEY_USER_VACCINATION, vaccination);
+
 
   Future<List<Event>> getEvents() async{
     var userId = prefs.getString(KEY_USER_ID);

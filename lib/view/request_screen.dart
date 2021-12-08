@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:meeting_app/data/event.dart';
+import 'package:meeting_app/viewmodel/create_event_view_model.dart';
 import 'package:meeting_app/viewmodel/main_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -88,13 +89,13 @@ class _RequestScreenState extends State<RequestScreen> {
   }
 
   Widget getRow(Event event) {
-    var location = event.location;
-    if(location.length > 30) location = location.substring(0, 29) + '..';
     return GestureDetector(
       onTap: (){
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => EventInfoScreen(event)
-            ));
+            MaterialPageRoute(builder: (context) => ChangeNotifierProvider(
+                create: (BuildContext context) => CreateEventViewModel(),
+                child: EventInfoScreen(event)
+            )));
       },
       child: Card(
           child: Column(
@@ -128,11 +129,14 @@ class _RequestScreenState extends State<RequestScreen> {
                             size: 20,
                             color: Color.fromRGBO(0, 0, 0, 150),
                           ),
-                          Text(
-                            location,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Color.fromRGBO(0, 0, 0, 150),
+                          Flexible(
+                            child: Text(
+                              event.location,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Color.fromRGBO(0, 0, 0, 150),
+                              ),
                             ),
                           ),
                         ]
@@ -222,7 +226,6 @@ class _RequestScreenState extends State<RequestScreen> {
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
-
   }
 
   Future<void> onRefreshList() async{
