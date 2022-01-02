@@ -45,7 +45,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(80.0),
                   child: Image.asset(
-                      'lib/images/avatar.jpg',
+                      'lib/images/avatar_placeholder.jpg',
                     height: 160,
                   ),
                 ),

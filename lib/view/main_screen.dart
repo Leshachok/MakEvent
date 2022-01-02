@@ -24,7 +24,6 @@ class _MainScreenState extends State<MainScreen>{
 
   @override
   Widget build(BuildContext context) {
-    initViewModel();
 
     return Scaffold(
       body: fragments[currentIndex],

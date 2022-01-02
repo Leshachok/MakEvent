@@ -1,11 +1,15 @@
 
 import 'dart:convert';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meeting_app/data/participant.dart';
 import 'package:meeting_app/model/repository.dart';
 import '../data/event.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../firebase_options.dart';
 
 class MainViewModel with ChangeNotifier{
 
@@ -27,10 +31,12 @@ class MainViewModel with ChangeNotifier{
     _requests = [
       Event('Збір у Яни вдома', 'Можна все - але тихо', '04-11-2021', 'Сегедська 9а, 13, Приморський район, Одеса', 46.4499439, 30.744418, false),
     ];
+    init();
   }
 
   Future<void> init() async{
     await repository.initPrefs();
+    getFCMToken();
     getUsername();
     getVaccination();
     downloadEvents();
@@ -83,6 +89,7 @@ class MainViewModel with ChangeNotifier{
 
   logout() => repository.logout();
 
+
   Future<String> updateUser(String newName, String vaccination) async{
     return await repository.updateUser(newName, vaccination);
   }
@@ -122,6 +129,21 @@ class MainViewModel with ChangeNotifier{
 
   Future<String> findUserbyNickname(String nickname) async{
     return await repository.findUserbyNickname(nickname);
+  }
+  //хуня изза отсутствия токенов
+  void getFCMToken() {
+    var fm = FirebaseMessaging.instance;
+    fm.getToken().then((token) async {
+      await saveTokenToDatabase(token);
+    });
+
+    // Any time the token refreshes, store this in the database too.
+    FirebaseMessaging.instance.onTokenRefresh.listen(saveTokenToDatabase);
+  }
+
+  saveTokenToDatabase(String? token) {
+    if(token == null) return;
+    repository.setFCMToken(token);
   }
 
 }

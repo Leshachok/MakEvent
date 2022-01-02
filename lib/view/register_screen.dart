@@ -202,6 +202,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void authorize(dynamic json){
     var viewModel = context.read<AuthViewModel>();
     viewModel.authorize(json);
+    var vmodel = context.read<MainViewModel>();
+    vmodel.getUsername();
+    vmodel.getVaccination();
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => MainScreen())
     );

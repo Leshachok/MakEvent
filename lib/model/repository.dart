@@ -64,9 +64,13 @@ class Repository{
 
   bool isAuthorized() => prefs.containsKey(KEY_USER_ID);
 
-  logout(){
+  logout() async{
+    var response = await removeFCMToken();
+
+    print(response);
     prefs.remove(KEY_USER_ID);
     prefs.remove(KEY_USER_NAME);
+    prefs.remove(KEY_USER_VACCINATION);
   }
 
   Future<String> updateUser(String newName, String vaccination) async{
@@ -79,6 +83,8 @@ class Repository{
   }
 
   String getUserName() => prefs.getString(KEY_USER_NAME)!;
+
+  String getUserId() => prefs.getString(KEY_USER_ID)!;
 
   String getVaccination() => prefs.getString(KEY_USER_VACCINATION)!;
 
@@ -195,6 +201,24 @@ class Repository{
     return participants;
   }
 
+  Future<dynamic> setFCMToken(String token) async{
+    var user_id = getUserId();
+    final response = await http.post(
+        Uri.parse('https://appmeeting.azurewebsites.net/fcm/set'),
+        body: { "user_id": user_id, "token": token }
+    );
 
+    return response.body;
+  }
+
+  Future<dynamic> removeFCMToken() async{
+    var user_id = getUserId();
+    final response = await http.post(
+        Uri.parse('https://appmeeting.azurewebsites.net/fcm/remove'),
+        body: { "user_id": user_id }
+    );
+
+    return response.body;
+  }
 
 }

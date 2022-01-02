@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meeting_app/model/repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,6 +25,21 @@ class AuthViewModel with ChangeNotifier{
 
   Future<String> findUserByEmail(String email){
     return repository.findUserByEmail(email);
+  }
+
+  void getFCMToken() {
+    var fm = FirebaseMessaging.instance;
+    fm.getToken().then((token) async {
+      await saveTokenToDatabase(token);
+    });
+
+    // Any time the token refreshes, store this in the database too.
+    FirebaseMessaging.instance.onTokenRefresh.listen(saveTokenToDatabase);
+  }
+
+  saveTokenToDatabase(String? token) {
+    if(token == null) return;
+    repository.setFCMToken(token);
   }
 
 }
