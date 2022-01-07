@@ -39,14 +39,12 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
   }
 
   Future<void> getParticipants() async{
-    print('get');
     participants = await viewModel.getParticipants(_event.getId());
 
     List<User> users = participants.map((e) => e.user).cast<User>().toList();
     createEventViewModel.users = users;
     oldusers.clear();
     oldusers.addAll(users);
-    print('old - '+  oldusers.toString());
     participants.forEach((element) {
       if(element.status == 3 && viewModel.checkUserID(element.user.getId())){
         isDeleteButtonVisible = true;

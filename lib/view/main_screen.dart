@@ -62,8 +62,4 @@ class _MainScreenState extends State<MainScreen>{
     });
   }
 
-  initViewModel() {
-     context.read<MainViewModel>().init();
-  }
-
 }

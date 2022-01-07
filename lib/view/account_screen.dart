@@ -23,7 +23,6 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Stack(
         alignment: Alignment.center,
@@ -45,7 +44,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(80.0),
                   child: Image.asset(
-                      'lib/images/avatar_placeholder.jpg',
+                      'lib/images/img.png',
                     height: 160,
                   ),
                 ),

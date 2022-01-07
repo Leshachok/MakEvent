@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meeting_app/data/participant.dart';
+import 'package:meeting_app/main.dart';
 import 'package:meeting_app/model/repository.dart';
 import '../data/event.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,21 +23,21 @@ class MainViewModel with ChangeNotifier{
   bool vaccinationSwitch = false;
   String vaccination = "";
 
-  MainViewModel(BuildContext context){
+  MainViewModel(){
     repository = Repository();
-    _events = [
-      Event('Похід у кіно', 'Йдемо на Людину-Павука 3 у Планету Кіно', '13-12-2021', 'Небесної сотні, 14, Київський район, Одеса', 46.415794, 30.712190, false),
-      Event('Актовський каньйон', 'Їдемо з німцями до каньйону в Миколаївській області', '16-09-2021 06:00', 'Золотий Дюк, Глушко, 12, Київський район, Одеса', 47.708668, 31.420617, true),
-    ];
-    _requests = [
-      Event('Збір у Яни вдома', 'Можна все - але тихо', '04-11-2021', 'Сегедська 9а, 13, Приморський район, Одеса', 46.4499439, 30.744418, false),
-    ];
+    // _events = [
+    //   Event('Похід у кіно', 'Йдемо на Людину-Павука 3 у Планету Кіно', '13-12-2021', 'Небесної сотні, 14, Київський район, Одеса', 46.415794, 30.712190, false),
+    //   Event('Актовський каньйон', 'Їдемо з німцями до каньйону в Миколаївській області', '16-09-2021 06:00', 'Золотий Дюк, Глушко, 12, Київський район, Одеса', 47.708668, 31.420617, true),
+    // ];
+    // _requests = [
+    //   Event('Збір у Яни вдома', 'Можна все - але тихо', '04-11-2021', 'Сегедська 9а, 13, Приморський район, Одеса', 46.4499439, 30.744418, false),
+    // ];
     init();
   }
 
   Future<void> init() async{
     await repository.initPrefs();
-    getFCMToken();
+    initFireBase();
     getUsername();
     getVaccination();
     downloadEvents();
@@ -130,6 +131,32 @@ class MainViewModel with ChangeNotifier{
   Future<String> findUserbyNickname(String nickname) async{
     return await repository.findUserbyNickname(nickname);
   }
+
+  initFireBase() async{
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    getFCMToken();
+    FirebaseMessaging.onMessage.listen(_firebaseMessagingForegroundHandler);
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
+
+  Future<void> _firebaseMessagingForegroundHandler(RemoteMessage message) async {
+    if(message.data.containsKey("event_type")){
+      String type = message.data["event_type"];
+      if(type == "invite"){
+        downloadRequests();
+      }else if(type == "participant_status"){
+
+      }
+    }
+    if (message.notification != null) {
+      print('Message also contained a notification: ${message.notification}');
+
+    }
+  }
+
   //хуня изза отсутствия токенов
   void getFCMToken() {
     var fm = FirebaseMessaging.instance;
@@ -146,4 +173,11 @@ class MainViewModel with ChangeNotifier{
     repository.setFCMToken(token);
   }
 
+}
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+
+  print("Handling a background message: ${message.notification}");
 }

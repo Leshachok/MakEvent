@@ -202,6 +202,7 @@ class Repository{
   }
 
   Future<dynamic> setFCMToken(String token) async{
+    if(!isAuthorized()) return;
     var user_id = getUserId();
     final response = await http.post(
         Uri.parse('https://appmeeting.azurewebsites.net/fcm/set'),
