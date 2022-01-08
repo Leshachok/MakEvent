@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:meeting_app/view/welcome_screen.dart';
-import 'package:meeting_app/viewmodel/main_view_model.dart';
+import 'package:meeting/view/welcome_screen.dart';
+import 'package:meeting/viewmodel/main_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -17,9 +17,7 @@ class AccountScreen extends StatefulWidget {
 class _AccountScreenState extends State<AccountScreen> {
 
   String username = "";
-  String vaccination = "";
   String newUsername = "";
-  String newVaccination = "";
 
   @override
   Widget build(BuildContext context) {
@@ -80,10 +78,6 @@ class _AccountScreenState extends State<AccountScreen> {
                                   ),
                                 )
                               ],
-                            ),
-                            Container(
-                              child: Text(model.vaccination),
-                              margin: EdgeInsets.only(top: 16),
                             )
                           ],
                         );
@@ -115,7 +109,6 @@ class _AccountScreenState extends State<AccountScreen> {
       context: context,
       builder: (context) => Consumer<MainViewModel>(
           builder: (context, model, child) {
-            var value = model.vaccinationSwitch;
             return AlertDialog(
               title: const Text('Змінити дані'),
               contentPadding: EdgeInsets.only(top: 16, left: 24, right: 24),
@@ -130,25 +123,12 @@ class _AccountScreenState extends State<AccountScreen> {
                             newUsername = text;
                           },
                           decoration: const InputDecoration(
-                            hintText: "Новий нікнейм (необов'язково)",
+                            hintText: "Новий нікнейм",
                             hintStyle: TextStyle(
                               color: Color.fromRGBO(94, 98, 102, 1),
                             ),
                             border: InputBorder.none,
                           )
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Вакцинація:'),
-                          Switch(value: value, onChanged: (isvacc){
-                            newVaccination = isvacc ? "Вакцинований" : "Не вакцинований";
-                            model.setVaccinationSwitch(isvacc);
-                          }),
-                        ],
-                      ),
-                      const Text("""Увага! Інші користувачі лише бачать ваш нікнейм. Такі дані, як електронна пошта та статус вакцінації не розповсюджується і використувається лише для ідентифікації та визначенні covid-безпечності зустрічі. (Закон України "Про захист персональних даних")""",
-                        style: TextStyle(fontSize: 10, color: Colors.grey),
                       ),
                     ],
                   )
@@ -167,10 +147,7 @@ class _AccountScreenState extends State<AccountScreen> {
           },
         )
     ).then((value){
-      if(value == null){
-        var viewModel = context.read<MainViewModel>();
-        viewModel.vaccinationSwitch = viewModel.isVaccinated;
-      }else if(value == true){
+      if(value == true){
         final snackBar = SnackBar(
           content: Text('Інформацію змінено!'),
           action: SnackBarAction(
@@ -186,7 +163,7 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   void onUserDataEditConfirmed() async{
-    if(newUsername.length < 6 && newVaccination.isEmpty){
+    if(newUsername.length < 6){
       Fluttertoast.showToast(
         msg: "Довжина нікнейму повинна бути 6 або більше символів!",
         toastLength: Toast.LENGTH_SHORT,
@@ -194,16 +171,13 @@ class _AccountScreenState extends State<AccountScreen> {
       );
       return;
     }
-    if(newUsername.length < 6) newUsername = "";
     closeDialog(true);
     var viewModel = context.read<MainViewModel>();
-    var response = await viewModel.updateUser(newUsername, newVaccination);
+    var response = await viewModel.updateUser(newUsername);
     print(response);
     var json = jsonDecode(response);
     if(json['name'] != null){
       viewModel.setUsername(json['name']);
-      viewModel.setVaccination(json['vaccination']);
-      newVaccination = "";
       newUsername = "";
     }else{
       Fluttertoast.showToast(

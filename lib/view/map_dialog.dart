@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:meeting_app/viewmodel/create_event_view_model.dart';
+import 'package:meeting/viewmodel/create_event_view_model.dart';
 import 'package:google_geocoding/google_geocoding.dart';
 import 'package:collection/collection.dart';
 

@@ -1,12 +1,8 @@
-
-import 'dart:convert';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:meeting_app/data/participant.dart';
-import 'package:meeting_app/main.dart';
-import 'package:meeting_app/model/repository.dart';
+import 'package:meeting/data/participant.dart';
+import 'package:meeting/model/repository.dart';
 import '../data/event.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,9 +15,6 @@ class MainViewModel with ChangeNotifier{
   List<Event> _events = [];
   List<Event> _requests = [];
   String username = "";
-  bool isVaccinated = false;
-  bool vaccinationSwitch = false;
-  String vaccination = "";
 
   MainViewModel(){
     repository = Repository();
@@ -39,7 +32,6 @@ class MainViewModel with ChangeNotifier{
     await repository.initPrefs();
     initFireBase();
     getUsername();
-    getVaccination();
     downloadEvents();
     downloadRequests();
   }
@@ -91,8 +83,8 @@ class MainViewModel with ChangeNotifier{
   logout() => repository.logout();
 
 
-  Future<String> updateUser(String newName, String vaccination) async{
-    return await repository.updateUser(newName, vaccination);
+  Future<String> updateUser(String newName) async{
+    return await repository.updateUser(newName);
   }
 
   void setUsername(String username){
@@ -100,27 +92,12 @@ class MainViewModel with ChangeNotifier{
     getUsername();
   }
 
-  void setVaccination(String vaccination) {
-    repository.setVaccination(vaccination);
-    getVaccination();
-  }
 
   void getUsername() {
     username = repository.getUserName();
     notifyListeners();
   }
 
-  void getVaccination() {
-    vaccination = repository.getVaccination();
-    isVaccinated = vaccination == "Вакцинований";
-    vaccinationSwitch = isVaccinated;
-    notifyListeners();
-  }
-
-  void setVaccinationSwitch(bool vaccination) {
-    vaccinationSwitch = vaccination;
-    notifyListeners();
-  }
 
   bool checkUserID(String user_id) => repository.checkUserID(user_id);
 

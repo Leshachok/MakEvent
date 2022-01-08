@@ -1,10 +1,10 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:meeting_app/view//account_screen.dart';
-import 'package:meeting_app/view/event_list_screen.dart';
-import 'package:meeting_app/view/request_screen.dart';
-import 'package:meeting_app/viewmodel/main_view_model.dart';
+import 'package:meeting/view//account_screen.dart';
+import 'package:meeting/view/event_list_screen.dart';
+import 'package:meeting/view/request_screen.dart';
+import 'package:meeting/viewmodel/main_view_model.dart';
 import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {

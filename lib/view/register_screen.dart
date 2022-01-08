@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:meeting_app/viewmodel/auth_view_model.dart';
-import 'package:meeting_app/viewmodel/main_view_model.dart';
+import 'package:meeting/viewmodel/auth_view_model.dart';
+import 'package:meeting/viewmodel/main_view_model.dart';
 import 'package:provider/src/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -204,7 +204,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     viewModel.authorize(json);
     var vmodel = context.read<MainViewModel>();
     vmodel.getUsername();
-    vmodel.getVaccination();
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => MainScreen())
     );

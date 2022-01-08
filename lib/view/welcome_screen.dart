@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:meeting_app/view/login_screen.dart';
-import 'package:meeting_app/view/register_screen.dart';
-import 'package:meeting_app/viewmodel/auth_view_model.dart';
+import 'package:meeting/view/login_screen.dart';
+import 'package:meeting/view/register_screen.dart';
+import 'package:meeting/viewmodel/auth_view_model.dart';
   import 'package:provider/src/provider.dart';
   import 'package:fluttertoast/fluttertoast.dart';
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:meeting_app/view/main_screen.dart';
-import 'package:meeting_app/view/welcome_screen.dart';
-import 'package:meeting_app/viewmodel/auth_view_model.dart';
-import 'package:meeting_app/viewmodel/main_view_model.dart';
+import 'package:meeting/view/main_screen.dart';
+import 'package:meeting/view/welcome_screen.dart';
+import 'package:meeting/viewmodel/auth_view_model.dart';
+import 'package:meeting/viewmodel/main_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

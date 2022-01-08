@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:meeting_app/data/event.dart';
-import 'package:meeting_app/model/repository.dart';
-import 'package:meeting_app/data/user.dart';
+import 'package:meeting/data/event.dart';
+import 'package:meeting/model/repository.dart';
+import 'package:meeting/data/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateEventViewModel with ChangeNotifier{

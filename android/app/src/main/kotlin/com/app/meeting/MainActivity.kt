@@ -1,4 +1,4 @@
-package com.example.meeting_app
+package com.app.meeting
 
 import io.flutter.embedding.android.FlutterActivity
 

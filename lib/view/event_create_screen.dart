@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:meeting_app/view/send_request_dialog.dart';
-import 'package:meeting_app/viewmodel/create_event_view_model.dart';
-import 'package:meeting_app/data/event.dart';
-import 'package:meeting_app/view/map_dialog.dart';
+import 'package:meeting/view/send_request_dialog.dart';
+import 'package:meeting/viewmodel/create_event_view_model.dart';
+import 'package:meeting/data/event.dart';
+import 'package:meeting/view/map_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:fluttertoast/fluttertoast.dart';

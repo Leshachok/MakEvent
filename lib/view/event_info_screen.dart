@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:meeting_app/data/event.dart';
-import 'package:meeting_app/data/participant.dart';
-import 'package:meeting_app/data/user.dart';
-import 'package:meeting_app/view/send_request_dialog.dart';
-import 'package:meeting_app/viewmodel/create_event_view_model.dart';
-import 'package:meeting_app/viewmodel/main_view_model.dart';
+import 'package:meeting/data/event.dart';
+import 'package:meeting/data/participant.dart';
+import 'package:meeting/data/user.dart';
+import 'package:meeting/view/send_request_dialog.dart';
+import 'package:meeting/viewmodel/create_event_view_model.dart';
+import 'package:meeting/viewmodel/main_view_model.dart';
 import 'package:provider/src/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -25,10 +25,9 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
   late MainViewModel viewModel;
   late CreateEventViewModel createEventViewModel;
   bool isDeleteButtonVisible = false;
-  String recommendation = "";
-  Color recommendationColor = Color.fromARGB(150, 0, 0, 0);
-  _EventInfoScreenState(this._event);
   List<User> oldusers = [];
+
+  _EventInfoScreenState(this._event);
 
   @override
   void initState(){
@@ -50,27 +49,9 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
         isDeleteButtonVisible = true;
       }
     });
-    await getRecommendation();
     setState(() {
 
     });
-  }
-
-  Future<void> getRecommendation() async{
-    bool allVaccinated = !participants.where((element) => element.status == 2 || element.status == 3).map((e) => e.user.vaccination).contains("Не вакцинований");
-    if(_event.isOutdoor && allVaccinated) {
-      recommendation = "Безпечно! Схоже, що всі учасники вакциновані, а зустріч відбудеться на свіжому повітрі";
-      recommendationColor = const Color.fromARGB(150, 0, 255, 0);
-    } else if(_event.isOutdoor) {
-      recommendation = "Майже безпечно! Не всі учасники вакциновані, але зустріч відбудеться на свіжому повітрі.";
-      recommendationColor = const Color.fromARGB(150, 255, 255, 0);
-    } else if(allVaccinated) {
-      recommendation = "Всі учасники вакциновані, але не забувайте про засоби особистої безпеки, адже зустріч буде у замкнутому просторі.";
-      recommendationColor = const Color.fromARGB(150, 255, 165, 0);
-    } else {
-      recommendation = "Небезпечно! Не всі вакциновані, а зустріч буде у замкнутому просторі.";
-      recommendationColor = const Color.fromARGB(150, 255, 0, 0);
-    }
   }
 
   @override
@@ -94,19 +75,6 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
                           shape: CircleBorder(),
                           fixedSize: Size(50, 50),
                           primary: const Color.fromARGB(150, 0, 0, 0)
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 116,
-                    left: 16,
-                    child: ElevatedButton(
-                      onPressed: onRecommendationPressed,
-                      child: const Icon(Icons.coronavirus),
-                      style: ElevatedButton.styleFrom(
-                          shape: CircleBorder(),
-                          fixedSize: Size(50, 50),
-                          primary: recommendationColor
                       ),
                     ),
                   ),
@@ -369,19 +337,6 @@ class _EventInfoScreenState extends State<EventInfoScreen> {
   }
 
   void onBackButtonPressed() => Navigator.pop(context, 'close');
-
-  onRecommendationPressed(){
-    showDialog(
-        context: context,
-        builder: (BuildContext context){
-          return AlertDialog(
-            title: const Text('Covid-безпечність'),
-            content: Text(
-              recommendation
-            ),
-          );
-        });
-  }
 
   Widget getStatus(int pos){
     Color textColor = participants[pos].status == 0 ? Colors.grey :  participants[pos].status == 1 ? Color.fromRGBO(255, 23, 68, 1) : participants[pos].status == 2 ? Colors.green : Colors.blue;

@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:meeting_app/data/user.dart';
-import 'package:meeting_app/viewmodel/create_event_view_model.dart';
+import 'package:meeting/data/user.dart';
+import 'package:meeting/viewmodel/create_event_view_model.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class SendRequestDialog extends StatefulWidget {

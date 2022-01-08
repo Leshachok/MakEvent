@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:meeting_app/data/authorization.dart';
-import 'package:meeting_app/data/event.dart';
-import 'package:meeting_app/data/participant.dart';
-import 'package:meeting_app/data/participation.dart';
+import 'package:meeting/data/authorization.dart';
+import 'package:meeting/data/event.dart';
+import 'package:meeting/data/participant.dart';
+import 'package:meeting/data/participation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,7 +13,6 @@ class Repository{
   late SharedPreferences prefs;
   static const KEY_USER_ID = "user_id";
   static const KEY_USER_NAME = "user_name";
-  static const KEY_USER_VACCINATION = "user_vaccination";
 
   factory Repository() {
     return _singleton;
@@ -56,10 +55,8 @@ class Repository{
   void authorize(dynamic json){
     String id = json['_id'];
     String name = json['name'];
-    String vaccination = json['vaccination'];
     prefs.setString(KEY_USER_ID, id);
     prefs.setString(KEY_USER_NAME, name);
-    prefs.setString(KEY_USER_VACCINATION, vaccination);
   }
 
   bool isAuthorized() => prefs.containsKey(KEY_USER_ID);
@@ -70,14 +67,13 @@ class Repository{
     print(response);
     prefs.remove(KEY_USER_ID);
     prefs.remove(KEY_USER_NAME);
-    prefs.remove(KEY_USER_VACCINATION);
   }
 
-  Future<String> updateUser(String newName, String vaccination) async{
+  Future<String> updateUser(String newName) async{
     var userId = prefs.getString(KEY_USER_ID);
     final response = await http.post(
       Uri.parse('https://appmeeting.azurewebsites.net/user/update'),
-      body: { "name": newName, "vaccination": vaccination, KEY_USER_ID: userId },
+      body: { "name": newName, KEY_USER_ID: userId },
     );
     return response.body;
   }
@@ -86,13 +82,9 @@ class Repository{
 
   String getUserId() => prefs.getString(KEY_USER_ID)!;
 
-  String getVaccination() => prefs.getString(KEY_USER_VACCINATION)!;
-
   bool checkUserID(String userId) => prefs.getString(KEY_USER_ID)! == userId;
 
   setUsername(String username) => prefs.setString(KEY_USER_NAME, username);
-
-  setVaccination(String vaccination) => prefs.setString(KEY_USER_VACCINATION, vaccination);
 
 
   Future<List<Event>> getEvents() async{

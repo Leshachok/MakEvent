@@ -3,10 +3,9 @@ class User{
   late String image;
   late String name;
   late int status;
-  late String vaccination;
   late String _id;
 
-  User(this.image, this.name, this.vaccination, this._id);
+  User(this.image, this.name, this._id);
 
   User.getUser(this.name, this._id, this.image);
 
@@ -16,7 +15,7 @@ class User{
   }
 
   factory User.fromJsonAsParticipiant(dynamic json){
-    return User(json['photo'] as String, json['name'] as String, json['vaccination'] as String, json['_id'] as String);
+    return User(json['photo'] as String, json['name'] as String, json['_id'] as String);
   }
 
   String getId() => _id;
