@@ -1,11 +1,8 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:meeting/view//account_screen.dart';
 import 'package:meeting/view/event_list_screen.dart';
 import 'package:meeting/view/request_screen.dart';
-import 'package:meeting/viewmodel/main_view_model.dart';
-import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -17,9 +14,9 @@ class _MainScreenState extends State<MainScreen>{
   var currentIndex = 0;
 
   List<Widget> fragments = [
-    AccountScreen(),
     EventListScreen(),
-    RequestScreen()
+    RequestScreen(),
+    AccountScreen(),
   ];
 
   @override
@@ -28,17 +25,12 @@ class _MainScreenState extends State<MainScreen>{
     return Scaffold(
       body: fragments[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: const Color.fromRGBO(198, 255, 0, 1),
+        selectedItemColor: Colors.white,
         backgroundColor: const Color.fromRGBO(255, 23, 68, 1),
+        unselectedItemColor: Colors.white.withOpacity(0.6),
         onTap: onBottomAppbarTapped,
         currentIndex:  currentIndex,
         items: const [
-          BottomNavigationBarItem(
-              label: "Акаунт",
-              icon: Icon(
-                  Icons.account_circle
-              )
-          ),
           BottomNavigationBarItem(
               label: "Зустрічі",
               icon: Icon(
@@ -49,6 +41,12 @@ class _MainScreenState extends State<MainScreen>{
               label: "Запрошення",
               icon: Icon(
                   Icons.notifications_active
+              )
+          ),
+          BottomNavigationBarItem(
+              label: "Акаунт",
+              icon: Icon(
+                  Icons.account_circle
               )
           ),
         ],

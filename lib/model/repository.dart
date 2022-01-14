@@ -13,6 +13,7 @@ class Repository{
   late SharedPreferences prefs;
   static const KEY_USER_ID = "user_id";
   static const KEY_USER_NAME = "user_name";
+  static const KEY_USER_EMAIL = "user_email";
 
   factory Repository() {
     return _singleton;
@@ -52,11 +53,13 @@ class Repository{
     return response.body;
   }
 
-  void authorize(dynamic json){
+  void authorize(dynamic json, String email){
     String id = json['_id'];
     String name = json['name'];
     prefs.setString(KEY_USER_ID, id);
     prefs.setString(KEY_USER_NAME, name);
+    prefs.setString(KEY_USER_EMAIL, email);
+    print(email);
   }
 
   bool isAuthorized() => prefs.containsKey(KEY_USER_ID);
@@ -81,6 +84,8 @@ class Repository{
   String getUserName() => prefs.getString(KEY_USER_NAME)!;
 
   String getUserId() => prefs.getString(KEY_USER_ID)!;
+
+  String getUserEmail() => prefs.getString(KEY_USER_EMAIL)!;
 
   bool checkUserID(String userId) => prefs.getString(KEY_USER_ID)! == userId;
 

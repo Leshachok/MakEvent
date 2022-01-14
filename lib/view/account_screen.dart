@@ -11,155 +11,156 @@ class AccountScreen extends StatefulWidget {
   const AccountScreen({Key? key}) : super(key: key);
 
   @override
-  _AccountScreenState createState() => _AccountScreenState();
+  State<AccountScreen> createState() => _AccountScreenState();
 }
 
 class _AccountScreenState extends State<AccountScreen> {
+
+  late BuildContext context;
+  late MainViewModel mainViewModel;
 
   String username = "";
   String newUsername = "";
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            color: const Color.fromRGBO(255, 23, 68, 1),
-          ),
-          Container(
-            margin: const EdgeInsets.only(top: 180),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(48))
-            ),
-          ),
-          Positioned(
-            top: 100,
-            child: Column(
+    mainViewModel = context.read<MainViewModel>();
+    this.context = context;
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Color.fromRGBO(242, 242, 242, 1),
+        body: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(80.0),
-                  child: Image.asset(
-                      'lib/images/img.png',
-                    height: 160,
+                Padding(
+                  padding: EdgeInsets.only(top: 16, right: 16),
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.logout,
+                      color: Color.fromRGBO(255, 23, 68, 1),
+                      size: 32,
+                    ),
+                    onPressed: showLogoutDialog,
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.only(top: 16, left: 32, right: 32),
-                  width: 300,
-                  child: Consumer<MainViewModel>(
-                      builder: (context, model, child) {
-                        return Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding:  EdgeInsets.only(left: 16),
-                                  child: Text(
-                                    model.username,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  child: TextButton(
-                                    child: const Icon(
-                                      Icons.edit,
-                                      color: Color.fromRGBO(255, 23, 68, 1),
-                                    ),
-                                    onPressed: onUserDataEdit,
-                                  ),
-                                )
-                              ],
-                            )
-                          ],
-                        );
-                      }
-                  ),
-                )
               ],
             ),
-          ),
-          Positioned(
-            top: 32,
-            right: 16,
-            child: IconButton(
-              icon: const Icon(
-                  Icons.logout,
-                color: Colors.white,
-                size: 32,
+            SizedBox(height: 48,),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(80.0),
+              child: Image.asset(
+                'lib/images/img.png',
+                height: 160,
               ),
-              onPressed: showLogoutDialog,
+            ),
+            SizedBox(height: 32,),
+            Container(
+              alignment: Alignment.centerLeft,
+              margin: EdgeInsets.only(left: 24),
+              child: Text(
+                "Електрона пошта",
+              ),
+            ),
+            SizedBox(height: 9,),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 24),
+              child: Consumer<MainViewModel>(
+                builder: (context, viewModel, child) =>
+                Container(
+                  height: 21,
+                  child: TextFormField(
+                    maxLines: 1,
+                    readOnly: true,
+                    initialValue: viewModel.email,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color.fromRGBO(31, 28, 29, 1),
+                      fontWeight: FontWeight.w700),
+                    decoration: InputDecoration(
+                      counterText: '',
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 19,),
+            Container(
+              alignment: Alignment.centerLeft,
+              margin: EdgeInsets.only(left: 24),
+              child: Text(
+                "Ім'я користувача",
+                style: TextStyle(
+
+                ),
+              ),
+            ),
+            SizedBox(height: 9,),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 24),
+              child: Consumer<MainViewModel>(
+                builder: (context, viewModel, child) =>
+                    Container(
+                      height: 21,
+                      child: TextFormField(
+                        maxLines: 1,
+                        initialValue: viewModel.username,
+                        onChanged: (nickname){
+                          viewModel.checkNewNickname(nickname);
+                          newUsername = nickname;
+                        },
+                        style: const TextStyle(
+                            fontSize: 16,
+                            color: Color.fromRGBO(31, 28, 29, 1),
+                            fontWeight: FontWeight.w700
+                        ),
+                        decoration: InputDecoration(
+                          counterText: '',
+                        ),
+                      ),
+                    ),
+              ),
+            ),
+            Spacer(),
+            Consumer<MainViewModel>(
+              builder: (context, viewModel, child) =>
+              Visibility(
+                visible: viewModel.isNewNicknameDifferent,
+                child: SizedBox(
+                  width: 1600,
+                  child: GestureDetector(
+                    onTap: onUserDataEditConfirmed,
+                    child: Container(
+                      height: 48,
+                      alignment: Alignment.center,
+                      margin: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Color.fromRGBO(255, 23, 68, 1),
+                        borderRadius: BorderRadius.circular(4)
+                      ),
+                      child: const Text(
+                        "ЗАСТОСУВАТИ ЗМІНИ",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             )
-          )
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  void onUserDataEdit(){
-    showDialog(
-      context: context,
-      builder: (context) => Consumer<MainViewModel>(
-          builder: (context, model, child) {
-            return AlertDialog(
-              title: const Text('Змінити дані'),
-              contentPadding: EdgeInsets.only(top: 16, left: 24, right: 24),
-              content: SizedBox(
-                height: 180,
-                  child: Column(
-                    children: [
-                      TextField(
-                          maxLines: 1,
-                          maxLength: 20,
-                          onChanged: (text){
-                            newUsername = text;
-                          },
-                          decoration: const InputDecoration(
-                            hintText: "Новий нікнейм",
-                            hintStyle: TextStyle(
-                              color: Color.fromRGBO(94, 98, 102, 1),
-                            ),
-                            border: InputBorder.none,
-                          )
-                      ),
-                    ],
-                  )
-              ),
-              actionsPadding: EdgeInsets.symmetric(vertical: 0),
-              actions: [
-                TextButton(
-                    onPressed: () => closeDialog(false),
-                    child: const Text('Відхилити')),
-                TextButton(
-                    onPressed: onUserDataEditConfirmed,
-                    child: const Text('Підтвердити'))
-              ],
-
-            );
-          },
-        )
-    ).then((value){
-      if(value == true){
-        final snackBar = SnackBar(
-          content: Text('Інформацію змінено!'),
-          action: SnackBarAction(
-            label: 'Добре',
-            onPressed: () {
-              // Some code to undo the change.
-            },
-          ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      }
-    });
+  @override
+  void dispose(){
+    super.dispose();
+    mainViewModel.isNewNicknameDifferent = false;
   }
 
   void onUserDataEditConfirmed() async{
@@ -171,13 +172,12 @@ class _AccountScreenState extends State<AccountScreen> {
       );
       return;
     }
-    closeDialog(true);
     var viewModel = context.read<MainViewModel>();
     var response = await viewModel.updateUser(newUsername);
-    print(response);
     var json = jsonDecode(response);
     if(json['name'] != null){
       viewModel.setUsername(json['name']);
+      viewModel.isNewNicknameDifferent = false;
       newUsername = "";
     }else{
       Fluttertoast.showToast(
@@ -220,5 +220,4 @@ class _AccountScreenState extends State<AccountScreen> {
     );
     viewModel.logout();
   }
-
 }

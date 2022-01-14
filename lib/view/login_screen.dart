@@ -176,7 +176,7 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   void authorize(dynamic json){
-    viewModel.authorize(json);
+    viewModel.authorize(json, email);
     var vmodel = context.read<MainViewModel>();
     vmodel.getUsername();
     Navigator.pushAndRemoveUntil(

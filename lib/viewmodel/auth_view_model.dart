@@ -11,8 +11,8 @@ class AuthViewModel with ChangeNotifier{
     repository = Repository();
   }
 
-  void authorize(dynamic json){
-    repository.authorize(json);
+  void authorize(dynamic json, String email){
+    repository.authorize(json, email);
   }
 
   Future<String> register(String email, String password){

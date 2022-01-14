@@ -15,16 +15,11 @@ class MainViewModel with ChangeNotifier{
   List<Event> _events = [];
   List<Event> _requests = [];
   String username = "";
+  String email = "";
+  bool isNewNicknameDifferent = false;
 
   MainViewModel(){
     repository = Repository();
-    // _events = [
-    //   Event('Похід у кіно', 'Йдемо на Людину-Павука 3 у Планету Кіно', '13-12-2021', 'Небесної сотні, 14, Київський район, Одеса', 46.415794, 30.712190, false),
-    //   Event('Актовський каньйон', 'Їдемо з німцями до каньйону в Миколаївській області', '16-09-2021 06:00', 'Золотий Дюк, Глушко, 12, Київський район, Одеса', 47.708668, 31.420617, true),
-    // ];
-    // _requests = [
-    //   Event('Збір у Яни вдома', 'Можна все - але тихо', '04-11-2021', 'Сегедська 9а, 13, Приморський район, Одеса', 46.4499439, 30.744418, false),
-    // ];
     init();
   }
 
@@ -32,6 +27,7 @@ class MainViewModel with ChangeNotifier{
     await repository.initPrefs();
     initFireBase();
     getUsername();
+    getEmail();
     downloadEvents();
     downloadRequests();
   }
@@ -78,6 +74,13 @@ class MainViewModel with ChangeNotifier{
     return _requests;
   }
 
+  void checkNewNickname(String nickname){
+    if(username != nickname){
+      isNewNicknameDifferent = true;
+      notifyListeners();
+    }
+  }
+
   bool isAuthorized() => repository.isAuthorized();
 
   logout() => repository.logout();
@@ -98,6 +101,11 @@ class MainViewModel with ChangeNotifier{
     notifyListeners();
   }
 
+  void getEmail() {
+    email = repository.getUserEmail();
+    print(email);
+    notifyListeners();
+  }
 
   bool checkUserID(String user_id) => repository.checkUserID(user_id);
 

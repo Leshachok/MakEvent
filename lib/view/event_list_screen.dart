@@ -96,25 +96,34 @@ class _EventListScreenState extends State<EventListScreen> {
   Widget getFloatingButton() => DecoratedBox(
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(35),
-      boxShadow: const [
+      boxShadow: [
         BoxShadow(
-          spreadRadius: 0.005,
-          color: Colors.black,
+          color: Colors.black.withOpacity(0.14),
           offset: Offset(0, 4),
           blurRadius: 5,
-        )
+        ),
+        BoxShadow(
+          color: Colors.black.withOpacity(0.12),
+          offset: Offset(0, 1),
+          blurRadius: 10,
+        ),
+        BoxShadow(
+          color: Colors.black.withOpacity(0.20),
+          offset: Offset(0, 2),
+          blurRadius: 4,
+        ),
       ],
     ),
     child: SizedBox(
-      width: 70.0,
-      height: 70.0,
+      width: 56.0,
+      height: 56.0,
       child: RawMaterialButton(
         shape: const CircleBorder(),
         elevation: 0.0,
-        fillColor: Color.fromRGBO(198, 255, 0, 1),
+        fillColor: Colors.white,
         child: const Icon(
           Icons.add,
-          color: Colors.black,
+          color: Color.fromRGBO(255, 23, 68, 1),
         ),
         onPressed: onFloatingButtonPressed,
       ),
